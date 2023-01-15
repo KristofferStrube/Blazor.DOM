@@ -15,7 +15,7 @@ public class EventListener : BaseJSWrapper
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener eventListener = new EventListener(jSRuntime, jSInstance)
+        EventListener eventListener = new(jSRuntime, jSInstance)
         {
             callback = callback
         };
@@ -27,7 +27,7 @@ public class EventListener : BaseJSWrapper
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener eventListener = new EventListener(jSRuntime, jSInstance)
+        EventListener eventListener = new(jSRuntime, jSInstance)
         {
             asyncCallback = callback
         };
