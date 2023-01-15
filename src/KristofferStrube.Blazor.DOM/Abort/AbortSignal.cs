@@ -91,7 +91,7 @@ public class AbortSignal : EventTarget
     /// <summary>
     /// The onabort attribute is an event handler IDL attribute for the onabort event handler, whose event handler event type is abort.
     /// </summary>
-    public event Func<EventListener> OnAbort
+    public event Func<EventListener?> OnAbort
     {
         add
         {
