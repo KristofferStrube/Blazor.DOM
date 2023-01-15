@@ -6,8 +6,10 @@
 <h1>Listen for Events</h1>
 
 <p>
-    On this page we use JSInterop to get a JS reference to the below textarea and constructs an <code>EventTarget</code> from it and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
-    We get a strongly typed <code>Event</code> back which we check for its type. We can likewise remove these event listeners and re-listen for them again.
+    On this page we use JSInterop to get a JS reference to the below div and constructs an <code>EventTarget</code> from it and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
+    We get a strongly typed <code>Event</code> back which we check for its type.
+    <br />
+    We can likewise remove these event listeners and re-listen for them again. We have specifically chosen to <code>prevent default if the event type was a <code>pointerdown</code></code>
 </p>
 
 @if (subscribed)
@@ -19,25 +21,54 @@ else
     <button class="btn btn-success" @onclick=SubscribeAsync>Subscribe</button>
 }
 
-<textarea @ref="TextAreaRef" style="height:20vh;width:100%;">Try moving your pointer over this area or click it slowly.</textarea>
-<br />
-@if (type != string.Empty)
-{
-    <span>The type was: <code>@type</code></span>
-}
+<div @ref="DivRef" style="min-height:20vh;width:100%;border:solid 1px black;padding:5px;">
+    <p>
+        Try moving your pointer over this area or click it slowly.
+    </p>
+    @if (type != string.Empty)
+    {
+        <div>The type was: <code>@type</code></div>
+        <div>The event phase was: <code>@eventPhase</code></div>
+        <div>It bubbles: <code>@bubbles</code></div>
+        <div>It is cancelable: <code>@cancelable</code></div>
+        <div>It is defaultPrevented: <code>@defaultPrevented</code></div>
+        <div>It is composed: <code>@composed</code></div>
+        <div>It is trusted: <code>@isTrusted</code></div>
+        <div>It was made at : <code>@timeStamp</code></div>
+    }
+</div>
 
 @code {
-    ElementReference TextAreaRef;
+    ElementReference DivRef;
+    ElementReference InnerDivRef;
     EventListener? callback;
-
     bool subscribed = false;
+
     string type = string.Empty;
+    string eventPhase = string.Empty;
+    bool bubbles;
+    bool cancelable;
+    bool defaultPrevented;
+    bool composed;
+    bool isTrusted;
+    double timeStamp;
 
     protected override async Task OnInitializedAsync()
     {
         callback = await EventListener.CreateAsync(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
+            if (type is "pointerdown")
+            {
+                await e.PreventDefaultAsync();
+            }
+            eventPhase = (await e.GetEventPhaseAsync()).ToString();
+            bubbles = await e.GetBubblesAsync();
+            cancelable = await e.GetCancelableAsync();
+            defaultPrevented = await e.GetDefaultPreventedAsync();
+            composed = await e.GetDefaultPreventedAsync();
+            isTrusted = await e.GetIsTrustedAsync();
+            timeStamp = await e.GetTimeStampAsync();
             StateHasChanged();
         });
         await SubscribeAsync();
@@ -45,21 +76,21 @@ else
 
     protected async Task SubscribeAsync()
     {
-        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
-        await target.AddEventListenerAsync("pointerdown", callback);
-        await target.AddEventListenerAsync("pointermove", callback);
-        await target.AddEventListenerAsync("pointerup", callback);
-        await target.AddEventListenerAsync("pointerleave", callback);
-        subscribed = true;
+        var divTarget = await EventTarget.CreateAsync(JSRuntime, DivRef);
+        await divTarget.AddEventListenerAsync("pointerdown", callback);
+        await divTarget.AddEventListenerAsync("pointermove", callback);
+        await divTarget.AddEventListenerAsync("pointerup", callback);
+        await divTarget.AddEventListenerAsync("pointerleave", callback);
+        var divTarget2 = await EventTarget.CreateAsync(JSRuntime, InnerDivRef);
     }
 
     protected async Task UnsubscribeAsync()
     {
-        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
-        await target.RemoveEventListenerAsync("pointerdown", callback);
-        await target.RemoveEventListenerAsync("pointermove", callback);
-        await target.RemoveEventListenerAsync("pointerup", callback);
-        await target.RemoveEventListenerAsync("pointerleave", callback);
+        var divTarget = await EventTarget.CreateAsync(JSRuntime, DivRef);
+        await divTarget.RemoveEventListenerAsync("pointerdown", callback);
+        await divTarget.RemoveEventListenerAsync("pointermove", callback);
+        await divTarget.RemoveEventListenerAsync("pointerup", callback);
+        await divTarget.RemoveEventListenerAsync("pointerleave", callback);
         subscribed = false;
         type = string.Empty;
     }
