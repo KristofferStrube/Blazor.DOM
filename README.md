@@ -13,12 +13,12 @@ The API standardizes a lot of the most basic structures for working within the b
 
 **This project is still being developer so coverage is very limited.**
 
-<!--# Demo
+# Demo
 The sample project can be demoed at https://kristofferstrube.github.io/Blazor.DOM/
 
 On each page you can find the corresponding code for the example in the top right corner.
 
-On the [Status page](https://kristofferstrube.github.io/Blazor.DOM/Status) you can see how much of the WebIDL specs this wrapper has covered.-->
+On the [Status page](https://kristofferstrube.github.io/Blazor.DOM/Status) you can see how much of the WebIDL specs this wrapper has covered.
 
 # Issues
 Feel free to open issues on the repository if you find any errors with the package or have wishes for features.
