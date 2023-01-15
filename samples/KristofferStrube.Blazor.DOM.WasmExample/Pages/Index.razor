@@ -7,8 +7,17 @@
 
 <p>
     On this page we use JSInterop to get a JS reference to the below textarea and constructs an <code>EventTarget</code> from it and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
-    We get a strongly typed <code>Event</code> back which we check for its type.
+    We get a strongly typed <code>Event</code> back which we check for its type. We can like wise remove these event listeners and re-listen for them again.
 </p>
+
+@if (subscribed)
+{
+    <button class="btn btn-warning" @onclick=UnsubscribeAsync>Unsubsribe</button>
+}
+else
+{
+    <button class="btn btn-success" @onclick=SubscribeAsync>Subscribe</button>
+}
 
 <textarea @ref="TextAreaRef" style="height:20vh;width:100%;">Try moving your pointer over this area or click it slowly.</textarea>
 <br />
@@ -19,22 +28,39 @@
 
 @code {
     ElementReference TextAreaRef;
+    EventListener? callback;
 
+    bool subscribed = false;
     string type = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (!firstRender) return;
-
-        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
-        var callback = await EventListener.CreateAsync(JSRuntime, async (e) =>
+        callback = await EventListener.CreateAsync(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
             StateHasChanged();
         });
+        await SubscribeAsync();
+    }
+
+    protected async Task SubscribeAsync()
+    {
+        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
         await target.AddEventListenerAsync("pointerdown", callback);
         await target.AddEventListenerAsync("pointermove", callback);
         await target.AddEventListenerAsync("pointerup", callback);
         await target.AddEventListenerAsync("pointerleave", callback);
+        subscribed = true;
+    }
+
+    protected async Task UnsubscribeAsync()
+    {
+        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
+        await target.RemoveEventListenerAsync("pointerdown", callback);
+        await target.RemoveEventListenerAsync("pointermove", callback);
+        await target.RemoveEventListenerAsync("pointerup", callback);
+        await target.RemoveEventListenerAsync("pointerleave", callback);
+        subscribed = false;
+        type = string.Empty;
     }
 }

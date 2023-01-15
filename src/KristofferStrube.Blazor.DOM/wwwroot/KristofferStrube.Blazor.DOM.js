@@ -2,15 +2,14 @@ export function getAttribute(object, attribute) { return object[attribute]; }
 
 export function getJSReference(element) { return element.valueOf(); }
 
-export function addEventListener(target, type, eventListener, options = null)
+export function addEventListener(target, type, eventListener = null, options = null)
 {
-    if (options instanceof Boolean)
-    {
-    }
-    else
-    {
-        target.addEventListener(type, eventListener, options)
-    }
+    target.addEventListener(type, eventListener, options)
+}
+
+export function removeEventListener(target, type, eventListener = null, options)
+{
+    target.removeEventListener(type, eventListener, options)
 }
 
 export function constructEventListener() {

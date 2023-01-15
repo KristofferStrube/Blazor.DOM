@@ -59,9 +59,32 @@ public class EventTarget : BaseJSWrapper
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
     /// <returns></returns>
-    public async Task AddEventListenerAsync(string type, EventListener callback, AddEventListenerOptions? options = null)
+    public async Task AddEventListenerAsync(string type, EventListener? callback, AddEventListenerOptions? options = null)
     {
         var helper = await helperTask.Value;
-        await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback.JSReference, options);
+        await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback?.JSReference, options);
+    }
+
+    /// <summary>
+    /// Removes the event listener in target’s event listener list with the same type, callback, and options.
+    /// </summary>
+    /// <param name="type">The type of event that you want to remove the listener for.</param>
+    /// <param name="callback">the callback EventListener that you want to stop listening to events.</param>
+    /// <param name="options">The options argument sets listener-specific options.</param>
+    /// <returns></returns>
+    public async Task RemoveEventListenerAsync(string type, EventListener? callback, EventListenerOptions? options = null)
+    {
+        var helper = await helperTask.Value;
+        await helper.InvokeVoidAsync("removeEventListener", JSReference, type, callback?.JSReference, options);
+    }
+
+    /// <summary>
+    /// Dispatches a synthetic <see cref="Event"/> <paramref name="eventInstance"/> to target.
+    /// </summary>
+    /// <param name="eventInstance">The event you will dispatch.</param>
+    /// <returns>Returns true if either event’s cancelable attribute value is false or its preventDefault() method was not invoked; otherwise false.</returns>
+    public async Task<bool> DispatchEventAsync(Event eventInstance)
+    {
+        return await JSReference.InvokeAsync<bool>("dispatchEvent", eventInstance.JSReference);
     }
 }
