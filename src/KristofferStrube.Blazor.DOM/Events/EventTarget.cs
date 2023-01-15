@@ -1,4 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
@@ -13,6 +14,20 @@ public class EventTarget : BaseJSWrapper
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
     public static EventTarget Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
+        EventTarget eventTarget = new(jSRuntime, jSReference);
+        return eventTarget;
+    }
+
+    /// <summary>
+    /// Constructs a wrapper instance for a given a targetable <see cref="ElementReference"/>.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="element">A <see cref="ElementReference"/> to some element that is targetable.</param>
+    /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
+    public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
+    {
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        var jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
         EventTarget eventTarget = new(jSRuntime, jSReference);
         return eventTarget;
     }
@@ -47,12 +62,7 @@ public class EventTarget : BaseJSWrapper
     public async Task AddEventListenerAsync(string type, EventListener callback, AddEventListenerOptions? options = null)
     {
         var helper = await helperTask.Value;
-
-        if (callback.JSReference is null)
-        {
-            callback.JSReference = await helper.InvokeAsync<IJSObjectReference>("constructEventListener", callback.ObjRef);
-        }
-
+        callback.JSReference ??= await helper.InvokeAsync<IJSObjectReference>("constructEventListener", callback.ObjRef);
         await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback.JSReference, options);
     }
 }

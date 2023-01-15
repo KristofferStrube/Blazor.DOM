@@ -25,15 +25,13 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        var jSTextarea = await JSRuntime.InvokeAsync<IJSObjectReference>("jSReference", TextAreaRef);
-        var target = EventTarget.Create(JSRuntime, jSTextarea);
 
+        var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
         var callback = new EventListener(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
             StateHasChanged();
         });
-
         await target.AddEventListenerAsync("pointerdown", callback);
         await target.AddEventListenerAsync("pointermove", callback);
         await target.AddEventListenerAsync("pointerup", callback);
