@@ -1,0 +1,40 @@
+﻿@page "/"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor.DOM - Create an Event</PageTitle>
+
+<h1>Create an Event</h1>
+
+<p>
+    On this page we use JSInterop to subscribe to pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, <code>pointerenter</code>, and <code>pointerleave</code>)
+    on the below textarea and return back a strongly typed `Event` type.
+</p>
+
+<textarea @ref="TextAreaRef" style="height:30vh;width:100%;">
+    Try moving your pointer over this area or click it slowly.
+</textarea>
+<br />
+@if (type != string.Empty)
+{
+    <span>The type was: <code>@type</code></span>
+}
+
+@code {
+    ElementReference TextAreaRef;
+
+    string type = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await JSRuntime.InvokeVoidAsync("subscribePointerEvents", TextAreaRef, DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async Task PointerEventFired(IJSObjectReference jSObjectReference)
+    {
+        var eventInstance = Event.Create(JSRuntime, jSObjectReference);
+        type = await eventInstance.GetTypeAsync();
+        StateHasChanged();
+    }
+}
