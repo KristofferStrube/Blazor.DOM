@@ -1,13 +1,13 @@
 export function getAttribute(object, attribute) { return object[attribute]; }
 
-export function addEventListener(target, type, eventCallback, options = null)
+export function addEventListener(target, type, eventListener, options = null)
 {
     if (options instanceof Boolean)
     {
     }
     else
     {
-        target.addEventListener(type, eventCallback.callback, options)
+        target.addEventListener(type, eventListener.callback, options)
     }
 }
 
