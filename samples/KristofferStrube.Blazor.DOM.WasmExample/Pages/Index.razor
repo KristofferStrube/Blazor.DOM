@@ -9,18 +9,22 @@
     On this page we use JSInterop to get a JS reference to the below div and constructs an <code>EventTarget</code> from it and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
     We get a strongly typed <code>Event</code> back which we check for its type.
     <br />
-    We can likewise remove these event listeners and re-listen for them again. We have specifically chosen to <code>prevent default if the event type was a <code>pointerdown</code></code>
+    We can likewise remove these event listeners and re-listen for them again. We have specifically chosen to <code>PreventDefaultAsync</code> if the event type was a <code>pointerdown</code>.
+    <br />
+    You can also invoke an event directly the div without interacting with it as a user. In this case we see that the <code>pointerdown</code> is not prevented because we did not construct it to be cancelable.
 </p>
 
-@if (subscribed)
-{
-    <button class="btn btn-warning" @onclick=UnsubscribeAsync>Unsubsribe</button>
-}
-else
-{
-    <button class="btn btn-success" @onclick=SubscribeAsync>Subscribe</button>
-}
-
+<div style="margin-bottom:10px;display:flex;gap:10px;">
+    @if (subscribed)
+    {
+        <button class="btn btn-warning" @onclick=UnsubscribeAsync>Unsubsribe</button>
+    }
+    else
+    {
+        <button class="btn btn-success" @onclick=SubscribeAsync>Subscribe</button>
+    }
+    <button class="btn btn-primary" @onclick=DispatchEvent>Dispatch Pointer Down Event</button>
+</div>
 <div @ref="DivRef" style="min-height:20vh;width:100%;border:solid 1px black;padding:5px;">
     <p>
         Try moving your pointer over this area or click it slowly.
@@ -40,7 +44,6 @@ else
 
 @code {
     ElementReference DivRef;
-    ElementReference InnerDivRef;
     EventListener? callback;
     bool subscribed = false;
 
@@ -81,7 +84,7 @@ else
         await divTarget.AddEventListenerAsync("pointermove", callback);
         await divTarget.AddEventListenerAsync("pointerup", callback);
         await divTarget.AddEventListenerAsync("pointerleave", callback);
-        var divTarget2 = await EventTarget.CreateAsync(JSRuntime, InnerDivRef);
+        subscribed = true;
     }
 
     protected async Task UnsubscribeAsync()
@@ -93,5 +96,12 @@ else
         await divTarget.RemoveEventListenerAsync("pointerleave", callback);
         subscribed = false;
         type = string.Empty;
+    }
+
+    protected async Task DispatchEvent()
+    {
+        var divTarget = await EventTarget.CreateAsync(JSRuntime, DivRef);
+        var eventInstance = await Event.CreateAsync(JSRuntime, "pointerdown", new() { Bubbles = true });
+        await divTarget.DispatchEventAsync(eventInstance);
     }
 }
