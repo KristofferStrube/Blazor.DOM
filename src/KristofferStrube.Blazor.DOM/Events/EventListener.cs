@@ -3,6 +3,9 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
+/// <summary>
+/// <see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">EventListener browser specs</see>
+/// </summary>
 public class EventListener : BaseJSWrapper
 {
     private Action<Event>? callback;
@@ -11,9 +14,11 @@ public class EventListener : BaseJSWrapper
     public static async Task<EventListener> CreateAsync(IJSRuntime jSRuntime, Action<Event> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        var eventListener = new EventListener(jSRuntime, jSInstance);
-        eventListener.callback = callback;
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
+        EventListener eventListener = new EventListener(jSRuntime, jSInstance)
+        {
+            callback = callback
+        };
         await helper.InvokeVoidAsync("registerEventHandlerAsync", DotNetObjectReference.Create(eventListener), jSInstance);
         return eventListener;
     }
@@ -21,9 +26,11 @@ public class EventListener : BaseJSWrapper
     public static async Task<EventListener> CreateAsync(IJSRuntime jSRuntime, Func<Event, Task> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        var eventListener = new EventListener(jSRuntime, jSInstance);
-        eventListener.asyncCallback = callback;
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
+        EventListener eventListener = new EventListener(jSRuntime, jSInstance)
+        {
+            asyncCallback = callback
+        };
         await helper.InvokeVoidAsync("registerEventHandlerAsync", DotNetObjectReference.Create(eventListener), jSInstance);
         return eventListener;
     }

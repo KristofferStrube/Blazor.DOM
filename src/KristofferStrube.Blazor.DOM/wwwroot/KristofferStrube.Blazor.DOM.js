@@ -25,3 +25,5 @@ export function constructEvent(type, eventInitDict = null) {
 }
 
 export function constructEventTarget() { return new EventTarget(); }
+
+export function constructAbortController() { return new AbortController(); }

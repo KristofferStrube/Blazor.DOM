@@ -3,6 +3,9 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
+/// <summary>
+/// <see href="https://dom.spec.whatwg.org/#event">Event browser specs</see>
+/// </summary>
 public class Event : BaseJSWrapper
 {
     /// <summary>
@@ -43,7 +46,7 @@ public class Event : BaseJSWrapper
     /// <returns>A string representing the type of event, e.g. "click", "hashchange", or "submit".</returns>
     public async Task<string> GetTypeAsync()
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "type");
     }
 
@@ -53,8 +56,8 @@ public class Event : BaseJSWrapper
     /// <returns>The object to which this event is dispatched (its target).</returns>
     public async Task<EventTarget> GetTargetAsync()
     {
-        var helper = await helperTask.Value;
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "target");
+        IJSObjectReference helper = await helperTask.Value;
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "target");
         return new EventTarget(jSRuntime, jSInstance);
     }
 }

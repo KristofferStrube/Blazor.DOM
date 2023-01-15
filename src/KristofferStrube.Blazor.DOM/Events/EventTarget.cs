@@ -4,6 +4,9 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
+/// <summary>
+/// <see href="https://dom.spec.whatwg.org/#eventtarget">EventTarget browser specs</see>
+/// </summary>
 public class EventTarget : BaseJSWrapper
 {
     /// <summary>
@@ -27,7 +30,7 @@ public class EventTarget : BaseJSWrapper
     public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-        var jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
+        IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
         EventTarget eventTarget = new(jSRuntime, jSReference);
         return eventTarget;
     }
@@ -61,7 +64,7 @@ public class EventTarget : BaseJSWrapper
     /// <returns></returns>
     public async Task AddEventListenerAsync(string type, EventListener? callback, AddEventListenerOptions? options = null)
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback?.JSReference, options);
     }
 
@@ -74,7 +77,7 @@ public class EventTarget : BaseJSWrapper
     /// <returns></returns>
     public async Task RemoveEventListenerAsync(string type, EventListener? callback, EventListenerOptions? options = null)
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("removeEventListener", JSReference, type, callback?.JSReference, options);
     }
 

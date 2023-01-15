@@ -1,10 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KristofferStrube.Blazor.DOM;
 

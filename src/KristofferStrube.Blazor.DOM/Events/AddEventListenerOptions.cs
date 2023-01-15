@@ -2,6 +2,9 @@
 
 namespace KristofferStrube.Blazor.DOM;
 
+/// <summary>
+/// <see href="https://dom.spec.whatwg.org/#dictdef-addeventlisteneroptions">AddEventListenerOptions browser specs</see>
+/// </summary>
 public class AddEventListenerOptions : EventListenerOptions
 {
     [JsonPropertyName("passive")]
