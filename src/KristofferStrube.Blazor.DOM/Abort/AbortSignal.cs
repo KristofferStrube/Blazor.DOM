@@ -91,15 +91,15 @@ public class AbortSignal : EventTarget
     /// <summary>
     /// The onabort attribute is an event handler IDL attribute for the onabort event handler, whose event handler event type is abort.
     /// </summary>
-    public Func<Event, Task>? OnAbort { get; set; }
-
-    public async Task InvokeOnAbortAsync(IJSObjectReference jSEvent)
+    public event Func<EventListener> OnAbort
     {
-        if (OnAbort is null)
+        add
         {
-            return;
+            Task.Run(async () => await AddEventListenerAsync("abort", value.Invoke()));
         }
-
-        await OnAbort.Invoke(new Event(jSRuntime, jSEvent));
+        remove
+        {
+            Task.Run(async () => await RemoveEventListenerAsync("abort", value.Invoke()));
+        }
     }
 }
