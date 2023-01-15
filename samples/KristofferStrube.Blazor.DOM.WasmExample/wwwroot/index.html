@@ -42,13 +42,7 @@
     </script>
 
     <script>
-        function subscribePointerEvents(element, objRef) {
-            element.addEventListener("pointerdown", (e) => objRef.invokeMethodAsync("PointerEventFired", DotNet.createJSObjectReference(e)))
-            element.addEventListener("pointermove", (e) => objRef.invokeMethodAsync("PointerEventFired", DotNet.createJSObjectReference(e)))
-            element.addEventListener("pointerup", (e) => objRef.invokeMethodAsync("PointerEventFired", DotNet.createJSObjectReference(e)))
-            element.addEventListener("pointerenter", (e) => objRef.invokeMethodAsync("PointerEventFired", DotNet.createJSObjectReference(e)))
-            element.addEventListener("pointerleave", (e) => objRef.invokeMethodAsync("PointerEventFired", DotNet.createJSObjectReference(e)))
-        }
+        function jSReference(element) { return element.valueOf(); }
     </script>
 
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
