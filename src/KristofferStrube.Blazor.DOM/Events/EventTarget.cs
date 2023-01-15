@@ -62,7 +62,6 @@ public class EventTarget : BaseJSWrapper
     public async Task AddEventListenerAsync(string type, EventListener callback, AddEventListenerOptions? options = null)
     {
         var helper = await helperTask.Value;
-        callback.JSReference ??= await helper.InvokeAsync<IJSObjectReference>("constructEventListener", callback.ObjRef);
         await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback.JSReference, options);
     }
 }

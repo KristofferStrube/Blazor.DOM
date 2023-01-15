@@ -9,14 +9,16 @@ export function addEventListener(target, type, eventListener, options = null)
     }
     else
     {
-        target.addEventListener(type, eventListener.callback, options)
+        target.addEventListener(type, eventListener, options)
     }
 }
 
-export function constructEventListener(eventListenerObjRef) {
-    return {
-        callback: (e) => eventListenerObjRef.invokeMethodAsync("HandleEventAsync", DotNet.createJSObjectReference(e))
-    };
+export function constructEventListener() {
+    return { };
+}
+
+export function registerEventHandlerAsync(objRef, jSInstance) {
+    jSInstance.handleEvent = (e) => objRef.invokeMethodAsync("HandleEventAsync", DotNet.createJSObjectReference(e))
 }
 
 export function constructEvent(type, eventInitDict = null) {

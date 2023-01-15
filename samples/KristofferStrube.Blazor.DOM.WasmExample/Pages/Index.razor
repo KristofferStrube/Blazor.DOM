@@ -27,7 +27,7 @@
         if (!firstRender) return;
 
         var target = await EventTarget.CreateAsync(JSRuntime, TextAreaRef);
-        var callback = new EventListener(JSRuntime, async (e) =>
+        var callback = await EventListener.CreateAsync(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
             StateHasChanged();
