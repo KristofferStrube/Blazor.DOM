@@ -44,15 +44,15 @@ public class EventTarget : BaseJSWrapper
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
     /// <returns></returns>
-    public async Task AddEventListenerAsync(string type, EventCallback callback, AddEventListenerOptions? options = null)
+    public async Task AddEventListenerAsync(string type, EventListener callback, AddEventListenerOptions? options = null)
     {
         var helper = await helperTask.Value;
 
-        if (callback.eventCallbackJSReference is null)
+        if (callback.JSReference is null)
         {
-            callback.eventCallbackJSReference = await helper.InvokeAsync<IJSObjectReference>("constructEventCallback", callback.ObjRef);
+            callback.JSReference = await helper.InvokeAsync<IJSObjectReference>("constructEventListener", callback.ObjRef);
         }
 
-        await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback.eventCallbackJSReference, options);
+        await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback.JSReference, options);
     }
 }

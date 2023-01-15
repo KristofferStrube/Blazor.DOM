@@ -11,9 +11,9 @@ export function addEventListener(target, type, eventCallback, options = null)
     }
 }
 
-export function constructEventCallback(callbackObjRef) {
+export function constructEventListener(eventListenerObjRef) {
     return {
-        callback: (e) => callbackObjRef.invokeMethodAsync("InvokeCallback", DotNet.createJSObjectReference(e))
+        callback: (e) => eventListenerObjRef.invokeMethodAsync("HandleEventAsync", DotNet.createJSObjectReference(e))
     };
 }
 

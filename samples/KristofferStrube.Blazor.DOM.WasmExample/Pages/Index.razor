@@ -28,7 +28,7 @@
         var jSTextarea = await JSRuntime.InvokeAsync<IJSObjectReference>("jSReference", TextAreaRef);
         var target = EventTarget.Create(JSRuntime, jSTextarea);
 
-        var callback = new DOM.EventCallback(JSRuntime, async (e) =>
+        var callback = new EventListener(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
             StateHasChanged();
