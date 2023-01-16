@@ -2,7 +2,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/KristofferStrube/Blazor.DOM)](https://github.com/KristofferStrube/Blazor.DOM/issues)
 [![GitHub forks](https://img.shields.io/github/forks/KristofferStrube/Blazor.DOM)](https://github.com/KristofferStrube/Blazor.DOM/network/members)
 [![GitHub stars](https://img.shields.io/github/stars/KristofferStrube/Blazor.DOM)](https://github.com/KristofferStrube/Blazor.DOM/stargazers)
-<!--[![NuGet Downloads (official NuGet)](https://img.shields.io/nuget/dt/KristofferStrube.Blazor.DOM?label=NuGet%20Downloads)](https://www.nuget.org/packages/KristofferStrube.Blazor.DOM/)-->
+[![NuGet Downloads (official NuGet)](https://img.shields.io/nuget/dt/KristofferStrube.Blazor.DOM?label=NuGet%20Downloads)](https://www.nuget.org/packages/KristofferStrube.Blazor.DOM/)
 
 # Introduction
 A Blazor wrapper for the [DOM](https://dom.spec.whatwg.org/) browser API.
