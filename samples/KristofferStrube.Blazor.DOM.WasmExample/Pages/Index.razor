@@ -6,12 +6,12 @@
 <h1>Listen for Events</h1>
 
 <p>
-    On this page we use JSInterop to get a JS reference to the below div and constructs an <code>EventTarget</code> from it and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
-    We get a strongly typed <code>Event</code> back which we check for its type.
+    On this page we construct a <code>EventTarget</code> from a <code>ElementReference</code> and add event listeners for pointer events (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>, and <code>pointerleave</code>).
+    We get a strongly typed <code>Event</code> back when there is a callback which we check for its type and other event information.
     <br />
     We can likewise remove these event listeners and re-listen for them again. We have specifically chosen to <code>PreventDefaultAsync</code> if the event type was a <code>pointerdown</code>.
     <br />
-    You can also invoke an event directly the div without interacting with it as a user. In this case we see that the <code>pointerdown</code> is not prevented because we did not construct it to be cancelable.
+    You can also invoke an event directly on the div without interacting with it as a user. In this case we see that the <code>pointerdown</code> is not prevented because we did not construct it to be cancelable.
 </p>
 
 <div style="margin-bottom:10px;display:flex;gap:10px;">
