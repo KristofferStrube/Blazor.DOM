@@ -35,7 +35,7 @@ public class EventListener : BaseJSWrapper
         return eventListener;
     }
 
-    internal EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    protected EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
     }
 

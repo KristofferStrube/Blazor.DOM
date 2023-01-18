@@ -39,7 +39,7 @@ public class Event : BaseJSWrapper
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="Event"/>.</param>
-    internal Event(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    protected Event(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
     /// Gets the type of this <see cref="Event"/>
@@ -59,7 +59,7 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "target");
-        return jSInstance is null ? null : new EventTarget(jSRuntime, jSInstance);
+        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "srcElement");
-        return jSInstance is null ? null : new EventTarget(jSRuntime, jSInstance);
+        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "currentTarget");
-        return jSInstance is null ? null : new EventTarget(jSRuntime, jSInstance);
+        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class Event : BaseJSWrapper
         var length = await helper.InvokeAsync<int>("getAttribute", jSArray, "length");
         return (await Task.WhenAll(Enumerable
             .Range(0, length)
-            .Select(async i => new EventTarget(jSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
+            .Select(async i => EventTarget.Create(jSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
             .ToArray();
     }
 

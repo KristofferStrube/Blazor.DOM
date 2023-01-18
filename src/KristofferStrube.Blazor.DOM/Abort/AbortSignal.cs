@@ -55,9 +55,7 @@ public class AbortSignal : EventTarget
         return new AbortSignal(jSRuntime, jSInstance);
     }
 
-    public AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
-    {
-    }
+    protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
     /// Gets the aborted flag of this <see cref="AbortSignal"/>.

@@ -41,7 +41,7 @@ internal class AbortController : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "signal");
-        return new AbortSignal(jSRuntime, jSInstance);
+        return AbortSignal.Create(jSRuntime, jSInstance);
     }
 
     public async Task AbortAsync(string? reason = null)

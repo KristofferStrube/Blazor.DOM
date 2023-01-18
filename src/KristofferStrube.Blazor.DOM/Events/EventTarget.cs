@@ -53,7 +53,7 @@ public class EventTarget : BaseJSWrapper
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    internal EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    protected EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
     /// Appends an event listener for events whose type attribute value is type. The event listener is appended to target’s event listener list and is not appended if it has the same type, callback, and capture.
