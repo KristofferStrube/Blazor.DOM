@@ -25,6 +25,10 @@ export function constructEvent(type, eventInitDict = null) {
     return new Event(type, eventInitDict);
 }
 
+export function constructCustomEvent(type, eventInitDict = null) {
+    return new CustomEvent(type, eventInitDict);
+}
+
 export function constructEventTarget() { return new EventTarget(); }
 
 export function constructAbortController() { return new AbortController(); }

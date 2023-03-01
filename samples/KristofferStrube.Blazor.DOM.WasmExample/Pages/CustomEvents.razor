@@ -1,0 +1,59 @@
+﻿@page "/CustomEvents"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor.DOM - Custom Events</PageTitle>
+
+<h1>Custom Event</h1>
+
+<p>
+    We define a new event type called <code>MessageEvent</code> that inherits from <code>CustomEvent</code> which implements a <code>CreateAsync</code> creator method taking a string.
+    <br />
+    On this page we construct a new <code>MessageEvent</code> and a new <code>EventTarget</code>.
+    <br />
+    We then add an <code>EventListener</code> for a <code>MessageEvent</code> of the same type to the <code>EventTarget</code>.
+    <br />
+    Then we dispatch the <code>MessageEvent</code> to the <code>EventTarget</code> and observes that the <code>EventListener</code> is triggered.
+</p>
+
+The result was: <code>"@result"</code>
+
+@code {
+    string result = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var messageEvent = await MessageEvent.CreateAsync(JSRuntime, "This is the content of a MessageEvent");
+        var eventTarget = await EventTarget.CreateAsync(JSRuntime);
+        await eventTarget.AddEventListenerAsync(await EventListener<MessageEvent>.CreateAsync(JSRuntime, async (messageEvent) =>
+        {
+            result = await messageEvent.GetMessageAsync();
+            StateHasChanged();
+        }));
+        await eventTarget.DispatchEventAsync(messageEvent);
+    }
+
+    class MessageEvent : CustomEvent, IJSWrapper<MessageEvent>
+    {
+        public static async Task<CustomEvent> CreateAsync(IJSRuntime jSRuntime, string message)
+        {
+            var jSMessage = await jSRuntime.InvokeAsync<IJSObjectReference>("getValue", new Message(message));
+            return await CreateAsync(jSRuntime, nameof(MessageEvent), new CustomEventInit() { Detail = jSMessage });
+        }
+
+        public static new Task<MessageEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+        {
+            return Task.FromResult(new MessageEvent(jSRuntime, jSReference));
+        }
+
+        public MessageEvent(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) {}
+
+        public async Task<string> GetMessageAsync()
+        {
+            var detail = await GetDetailAsync();
+            var message = await JSRuntime.InvokeAsync<Message>("getValue", detail);
+            return message.Text;
+        }
+
+        record Message(string Text);
+    }
+}

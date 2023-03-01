@@ -8,11 +8,14 @@ namespace KristofferStrube.Blazor.DOM;
 public class EventInit
 {
     [JsonPropertyName("bubbles")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Bubbles { get; set; }
 
     [JsonPropertyName("cancelable")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Cancelable { get; set; }
 
     [JsonPropertyName("composed")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Composed { get; set; }
 }

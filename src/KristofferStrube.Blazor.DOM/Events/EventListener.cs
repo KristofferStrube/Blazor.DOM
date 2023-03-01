@@ -1,4 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
@@ -6,16 +7,16 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// <see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">EventListener browser specs</see>
 /// </summary>
-public class EventListener : BaseJSWrapper
+public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSWrapper<TEvent>
 {
-    private Action<Event>? callback;
-    private Func<Event, Task>? asyncCallback;
+    private Action<TEvent>? callback;
+    private Func<TEvent, Task>? asyncCallback;
 
-    public static async Task<EventListener> CreateAsync(IJSRuntime jSRuntime, Action<Event> callback)
+    public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Action<TEvent> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener eventListener = new(jSRuntime, jSInstance)
+        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance)
         {
             callback = callback
         };
@@ -23,11 +24,11 @@ public class EventListener : BaseJSWrapper
         return eventListener;
     }
 
-    public static async Task<EventListener> CreateAsync(IJSRuntime jSRuntime, Func<Event, Task> callback)
+    public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Func<TEvent, Task> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener eventListener = new(jSRuntime, jSInstance)
+        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance)
         {
             asyncCallback = callback
         };
@@ -44,11 +45,11 @@ public class EventListener : BaseJSWrapper
     {
         if (callback is not null)
         {
-            callback.Invoke(Event.Create(jSRuntime, jSObjectReference));
+            callback.Invoke(await TEvent.CreateAsync(JSRuntime, jSObjectReference));
         }
         else if (asyncCallback is not null)
         {
-            await asyncCallback.Invoke(Event.Create(jSRuntime, jSObjectReference));
+            await asyncCallback.Invoke(await TEvent.CreateAsync(JSRuntime, jSObjectReference));
         }
     }
 }

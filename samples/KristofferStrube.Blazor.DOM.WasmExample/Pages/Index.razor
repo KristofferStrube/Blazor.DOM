@@ -44,7 +44,7 @@
 
 @code {
     ElementReference DivRef;
-    EventListener? callback;
+    EventListener<Event>? callback;
     bool subscribed = false;
 
     string type = string.Empty;
@@ -58,7 +58,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        callback = await EventListener.CreateAsync(JSRuntime, async (e) =>
+        callback = await EventListener<Event>.CreateAsync(JSRuntime, async (e) =>
         {
             type = await e.GetTypeAsync();
             if (type is "pointerdown")

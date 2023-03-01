@@ -1,5 +1,6 @@
 ﻿using KristofferStrube.Blazor.DOM.Events;
 using KristofferStrube.Blazor.DOM.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
@@ -7,7 +8,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// <see href="https://dom.spec.whatwg.org/#event">Event browser specs</see>
 /// </summary>
-public class Event : BaseJSWrapper
+public class Event : BaseJSWrapper, IJSWrapper<Event>
 {
     /// <summary>
     /// Constructs a wrapper instance for a given JS Instance of a <see cref="Event"/>.
@@ -15,10 +16,10 @@ public class Event : BaseJSWrapper
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="Event"/>.</param>
     /// <returns>A wrapper instance for a <see cref="Event"/>.</returns>
-    public static Event Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         Event eventInstance = new(jSRuntime, jSReference);
-        return eventInstance;
+        return Task.FromResult(eventInstance);
     }
 
     /// <summary>
@@ -59,18 +60,7 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "target");
-        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
-    }
-
-    /// <summary>
-    /// Gets the target of this <see cref="Event"/>.
-    /// </summary>
-    /// <returns>The object to which this event is dispatched (its target).</returns>
-    public async Task<EventTarget?> GetSrcElementAsync()
-    {
-        IJSObjectReference helper = await helperTask.Value;
-        IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "srcElement");
-        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
+        return jSInstance is null ? null : EventTarget.Create(JSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -81,7 +71,7 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "currentTarget");
-        return jSInstance is null ? null : EventTarget.Create(jSRuntime, jSInstance);
+        return jSInstance is null ? null : EventTarget.Create(JSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -92,10 +82,10 @@ public class Event : BaseJSWrapper
     {
         IJSObjectReference jSArray = await JSReference.InvokeAsync<IJSObjectReference>("composedPath");
         IJSObjectReference helper = await helperTask.Value;
-        var length = await helper.InvokeAsync<int>("getAttribute", jSArray, "length");
+        int length = await helper.InvokeAsync<int>("getAttribute", jSArray, "length");
         return (await Task.WhenAll(Enumerable
             .Range(0, length)
-            .Select(async i => EventTarget.Create(jSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
+            .Select(async i => EventTarget.Create(JSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
             .ToArray();
     }
 
@@ -119,30 +109,8 @@ public class Event : BaseJSWrapper
     }
 
     /// <summary>
-    /// Its steps are to return <see langword="true"/> if this’s stop propagation flag is set; otherwise <see langword="false"/>.
-    /// </summary>
-    /// <returns></returns>
-    public async Task<bool> GetCancelBubbleAsync()
-    {
-        IJSObjectReference helper = await helperTask.Value;
-        return await helper.InvokeAsync<bool>("getAttribute", JSReference, "cancelBubble");
-    }
-
-    /// <summary>
-    /// Its steps are to set this’s stop propagation flag if the given value is <see langword="true"/>; otherwise do nothing.
-    /// </summary>
-    /// <param name="cancel"></param>
-    /// <returns></returns>
-    public async Task SetCancelBubbleAsync(bool value)
-    {
-        IJSObjectReference helper = await helperTask.Value;
-        await helper.InvokeAsync<bool>("setAttribute", JSReference, "cancelBubble", value);
-    }
-
-    /// <summary>
     /// Invoking this method prevents event from reaching any registered event listeners after the current one finishes running and, when dispatched in a tree, also prevents event from reaching any other objects.
     /// </summary>
-    /// <returns></returns>
     public async Task StopImmediatePropagationAsync()
     {
         await JSReference.InvokeVoidAsync("stopImmediatePropagation");
@@ -151,7 +119,7 @@ public class Event : BaseJSWrapper
     /// <summary>
     /// Returns <see langword="true"/> or <see langword="false"/> depending on how the event was initialized.
     /// </summary>
-    /// <returns>True if event goes through its target’s ancestors in reverse tree order; otherwise false.</returns>
+    /// <returns><see langword="true"/> if event goes through its target’s ancestors in reverse tree order; otherwise <see langword="false"/>.</returns>
     public async Task<bool> GetBubblesAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -171,7 +139,6 @@ public class Event : BaseJSWrapper
     /// <summary>
     /// If invoked when the cancelable attribute value is <see langword="true"/>, and while executing a listener for the event with passive set to <see langword="false"/>, signals to the operation that caused event to be dispatched that it needs to be canceled.
     /// </summary>
-    /// <returns></returns>
     public async Task PreventDefaultAsync()
     {
         await JSReference.InvokeVoidAsync("preventDefault");
@@ -200,7 +167,7 @@ public class Event : BaseJSWrapper
     /// <summary>
     /// Gets the the flag <c>isTrusted</c> of this <see cref="Event"/>.
     /// </summary>
-    /// <returns>Returns <see langword="true"/> if event was dispatched by the user agent, and <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true"/> if event was dispatched by the user agent, and <see langword="false"/> otherwise.</returns>
     public async Task<bool> GetIsTrustedAsync()
     {
         IJSObjectReference helper = await helperTask.Value;

@@ -1,4 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM.Abort;
@@ -37,11 +38,11 @@ internal class AbortController : BaseJSWrapper
     {
     }
 
-    public async Task<AbortSignal> GetSignalAsync()
+    public async Task<TAbortEvent> GetSignalAsync<TAbortEvent>() where TAbortEvent : Event, IJSWrapper<TAbortEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "signal");
-        return AbortSignal.Create(jSRuntime, jSInstance);
+        return await TAbortEvent.CreateAsync(JSRuntime, jSInstance);
     }
 
     public async Task AbortAsync(string? reason = null)
