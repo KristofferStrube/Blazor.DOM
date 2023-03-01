@@ -6,11 +6,11 @@
 <h1>Custom Event</h1>
 
 <p>
-    We define a new event type called <code>MessageEvent</code> that inherits from <code>CustomEvent</code> which implements a <code>CreateAsync</code> creator method taking a string.
+    On this page, we define a new event type called <code>MessageEvent</code> that inherits from <code>CustomEvent</code> which implements a <code>CreateAsync</code> creator method taking a string.
     <br />
-    On this page we construct a new <code>MessageEvent</code> and a new <code>EventTarget</code>.
+    We construct a new <code>MessageEvent</code> and a new <code>EventTarget</code>.
     <br />
-    We then add an <code>EventListener</code> for a <code>MessageEvent</code> of the same type to the <code>EventTarget</code>.
+    We then add an <code>EventListener</code> for a <code>MessageEvent</code> to the <code>EventTarget</code> which will save the original message.
     <br />
     Then we dispatch the <code>MessageEvent</code> to the <code>EventTarget</code> and observes that the <code>EventListener</code> is triggered.
 </p>
