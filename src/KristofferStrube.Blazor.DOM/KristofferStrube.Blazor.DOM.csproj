@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KristofferStrube.Blazor.WebIDL" Version="0.1.0-alpha.1" />
+    <PackageReference Include="KristofferStrube.Blazor.WebIDL" Version="0.1.0-alpha.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
   </ItemGroup>
 

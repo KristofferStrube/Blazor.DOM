@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
-public class CustomEvent : Event, IJSWrapper<CustomEvent>
+public class CustomEvent : Event, IJSCreatable<CustomEvent>
 {
     /// <summary>
     /// Constructs a wrapper instance for a given JS Instance of a <see cref="CustomEvent"/>.

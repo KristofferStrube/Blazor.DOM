@@ -38,7 +38,7 @@ internal class AbortController : BaseJSWrapper
     {
     }
 
-    public async Task<TAbortEvent> GetSignalAsync<TAbortEvent>() where TAbortEvent : Event, IJSWrapper<TAbortEvent>
+    public async Task<TAbortEvent> GetSignalAsync<TAbortEvent>() where TAbortEvent : Event, IJSCreatable<TAbortEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "signal");

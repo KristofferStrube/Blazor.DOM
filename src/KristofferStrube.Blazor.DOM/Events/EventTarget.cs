@@ -57,13 +57,14 @@ public class EventTarget : BaseJSWrapper
     protected EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
-    /// Appends an event listener for events whose type attribute value is type. The event listener is appended to target’s event listener list and is not appended if it has the same type, callback, and capture.
+    /// Appends an event listener for events whose type attribute value is type.
+    /// The event listener is appended to target’s event listener list and is not appended if it has the same type, callback, and capture.
     /// </summary>
     /// <param name="type">The type of events that the event listener will listen to.</param>
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
-    /// <returns></returns>
-    public async Task AddEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, AddEventListenerOptions? options = null) where TEvent : Event, IJSWrapper<TEvent>
+    public async Task AddEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, AddEventListenerOptions? options = null)
+        where TEvent : Event, IJSCreatable<TEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback?.JSReference, options);
@@ -75,7 +76,7 @@ public class EventTarget : BaseJSWrapper
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
     /// <returns></returns>
-    public async Task AddEventListenerAsync<TEvent>(EventListener<TEvent>? callback, AddEventListenerOptions? options = null) where TEvent : Event, IJSWrapper<TEvent>
+    public async Task AddEventListenerAsync<TEvent>(EventListener<TEvent>? callback, AddEventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("addEventListener", JSReference, typeof(TEvent).Name, callback?.JSReference, options);
@@ -88,7 +89,7 @@ public class EventTarget : BaseJSWrapper
     /// <param name="callback">the callback EventListener that you want to stop listening to events.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
     /// <returns></returns>
-    public async Task RemoveEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSWrapper<TEvent>
+    public async Task RemoveEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("removeEventListener", JSReference, type, callback?.JSReference, options);
@@ -100,7 +101,7 @@ public class EventTarget : BaseJSWrapper
     /// <param name="callback">the callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
     /// <returns></returns>
-    public async Task RemoveEventListenerAsync<TEvent>(EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSWrapper<TEvent>
+    public async Task RemoveEventListenerAsync<TEvent>(EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
         IJSObjectReference helper = await helperTask.Value;
         await helper.InvokeVoidAsync("removeEventListener", JSReference, typeof(TEvent).Name, callback?.JSReference, options);

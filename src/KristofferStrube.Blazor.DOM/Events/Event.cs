@@ -8,7 +8,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// <see href="https://dom.spec.whatwg.org/#event">Event browser specs</see>
 /// </summary>
-public class Event : BaseJSWrapper, IJSWrapper<Event>
+public class Event : BaseJSWrapper, IJSCreatable<Event>
 {
     /// <summary>
     /// Constructs a wrapper instance for a given JS Instance of a <see cref="Event"/>.

@@ -7,7 +7,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// <see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">EventListener browser specs</see>
 /// </summary>
-public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSWrapper<TEvent>
+public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCreatable<TEvent>
 {
     private Action<TEvent>? callback;
     private Func<TEvent, Task>? asyncCallback;

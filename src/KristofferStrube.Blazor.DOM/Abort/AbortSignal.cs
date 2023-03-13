@@ -6,7 +6,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// <see href="https://dom.spec.whatwg.org/#abortsignal">AbortSignal browser specs</see>
 /// </summary>
-public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, IJSWrapper<TAbortEvent>
+public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, IJSCreatable<TAbortEvent>
 {
     /// <summary>
     /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal"/>.
