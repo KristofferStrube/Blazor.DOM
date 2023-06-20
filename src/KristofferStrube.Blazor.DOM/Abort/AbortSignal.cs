@@ -15,10 +15,9 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal{TAbortEvent}"/>.</param>
     /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
-    public static AbortSignal<TAbortEvent> Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public new static Task<AbortSignal<TAbortEvent>> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        AbortSignal<TAbortEvent> abortSignal = new(jSRuntime, jSReference);
-        return abortSignal;
+        return Task.FromResult<AbortSignal<TAbortEvent>>(new(jSRuntime, jSReference));
     }
 
     /// <summary>

@@ -5,6 +5,15 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <inheritdoc/>
+public class EventListenerInProcess<TInProcessEvent> : EventListenerInProcess<TInProcessEvent, TInProcessEvent> where TInProcessEvent : Event, IJSInProcessCreatable<TInProcessEvent, TInProcessEvent>
+{
+    /// <inheritdoc/>
+    protected EventListenerInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, inProcessHelper, jSReference)
+    {
+    }
+}
+
+/// <inheritdoc/>
 public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEvent> where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
 {
     /// <summary>

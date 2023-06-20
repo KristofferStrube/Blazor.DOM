@@ -18,10 +18,9 @@ internal class AbortController : BaseJSWrapper
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="AbortController"/>.</param>
     /// <returns>A wrapper instance for a <see cref="AbortController"/>.</returns>
-    public static AbortController Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static Task<AbortController> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        AbortController abortController = new(jSRuntime, jSReference);
-        return abortController;
+        return Task.FromResult<AbortController>(new(jSRuntime, jSReference));
     }
 
     /// <summary>

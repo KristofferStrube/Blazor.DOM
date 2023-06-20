@@ -68,26 +68,29 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess
     }
 
     /// <inheritdoc/>
-    public void AddEventListener<TEvent>(string type, EventListener<TEvent>? callback, AddEventListenerOptions? options = null)
-        where TEvent : Event, IJSCreatable<TEvent>
+    public void AddEventListener<TInProcessEvent, TEvent>(string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
+         where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         this.AddEventListener(inProcessHelper, type, callback, options);
     }
 
     /// <inheritdoc/>
-    public void AddEventListener<TEvent>(EventListener<TEvent>? callback, AddEventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
+    public void AddEventListener<TInProcessEvent, TEvent>(EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
+         where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         this.AddEventListener(inProcessHelper, callback, options);
     }
 
     /// <inheritdoc/>
-    public void RemoveEventListener<TEvent>(string type, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
+    public void RemoveEventListener<TInProcessEvent, TEvent>(string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
+         where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         this.RemoveEventListener(inProcessHelper, type, callback, options);
     }
 
     /// <inheritdoc/>
-    public void RemoveEventListener<TEvent>(EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
+    public void RemoveEventListener<TInProcessEvent, TEvent>(EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
+         where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         this.RemoveEventListener(inProcessHelper, callback, options);
     }
@@ -95,6 +98,6 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess
     /// <inheritdoc/>
     public bool DispatchEvent(Event eventInstance)
     {
-        return this.DispatchEvent(inProcessHelper, eventInstance);
+        return IEventTargetInProcessExtensions.DispatchEvent(this, eventInstance);
     }
 }

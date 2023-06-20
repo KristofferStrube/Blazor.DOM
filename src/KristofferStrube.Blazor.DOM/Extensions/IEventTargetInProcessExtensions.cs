@@ -8,34 +8,36 @@ namespace KristofferStrube.Blazor.DOM.Extensions;
 /// </summary>
 public static class IEventTargetInProcessExtensions
 {
-    /// <inheritdoc cref="IEventTargetInProcess.AddEventListener{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)"/>
-    public static void AddEventListener<TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, string type, EventListener<TEvent>? callback, AddEventListenerOptions? options = null)
-        where TEvent : Event, IJSCreatable<TEvent>
+    /// <inheritdoc cref="IEventTargetInProcess.AddEventListener{TInProcessEvent, TEvent}(string, EventListenerInProcess{TInProcessEvent, TEvent}?, AddEventListenerOptions?)"/>
+    public static void AddEventListener<TInProcessEvent, TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
+        where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         inProcessHelper.InvokeVoid("addEventListener", eventTarget.JSReference, type, callback?.JSReference, options);
     }
 
-    /// <inheritdoc cref="IEventTargetInProcess.AddEventListener{TEvent}(EventListener{TEvent}?, AddEventListenerOptions?)"/>
-    public static void AddEventListener<TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, EventListener<TEvent>? callback, AddEventListenerOptions? options = null)
-        where TEvent : Event, IJSCreatable<TEvent>
+    /// <inheritdoc cref="IEventTargetInProcess.AddEventListener{TInProcessEvent, TEvent}(EventListenerInProcess{TInProcessEvent, TEvent}?, AddEventListenerOptions?)"/>
+    public static void AddEventListener<TInProcessEvent, TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
+        where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         inProcessHelper.InvokeVoid("addEventListener", eventTarget.JSReference, typeof(TEvent).Name, callback?.JSReference, options);
     }
 
-    /// <inheritdoc cref="IEventTargetInProcess.RemoveEventListener{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)"/>
-    public static void RemoveEventListener<TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, string type, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
+    /// <inheritdoc cref="IEventTargetInProcess.RemoveEventListener{TInProcessEvent, TEvent}(string, EventListenerInProcess{TInProcessEvent, TEvent}?, EventListenerOptions?)"/>
+    public static void RemoveEventListener<TInProcessEvent, TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
+        where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         inProcessHelper.InvokeVoid("removeEventListener", eventTarget.JSReference, type, callback?.JSReference, options);
     }
 
-    /// <inheritdoc cref="IEventTargetInProcess.RemoveEventListener{TEvent}(EventListener{TEvent}?, EventListenerOptions?)"/>
-    public static void RemoveEventListener<TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
+    /// <inheritdoc cref="IEventTargetInProcess.RemoveEventListener{TInProcessEvent, TEvent}(EventListenerInProcess{TInProcessEvent, TEvent}?, EventListenerOptions?)"/>
+    public static void RemoveEventListener<TInProcessEvent, TEvent>(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
+        where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
         inProcessHelper.InvokeVoid("removeEventListener", eventTarget.JSReference, typeof(TEvent).Name, callback?.JSReference, options);
     }
 
     /// <inheritdoc cref="IEventTargetInProcess.DispatchEvent(Event)"/>
-    public static bool DispatchEvent(this IEventTargetInProcess eventTarget, IJSInProcessObjectReference inProcessHelper, Event eventInstance)
+    public static bool DispatchEvent(this IEventTargetInProcess eventTarget, Event eventInstance)
     {
         return eventTarget.JSReference.Invoke<bool>("dispatchEvent", eventInstance.JSReference);
     }
