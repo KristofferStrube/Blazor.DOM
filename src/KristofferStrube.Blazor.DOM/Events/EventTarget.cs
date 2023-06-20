@@ -6,8 +6,10 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
-/// <see href="https://dom.spec.whatwg.org/#eventtarget">EventTarget browser specs</see>
+/// An <see cref="EventTarget"/> object represents a target to which an event can be dispatched when something has occurred.
+/// Each <see cref="EventTarget"/> object has an associated event listener list (a list of zero or more event listeners). It is initially the empty list.
 /// </summary>
+/// <remarks><see href="https://dom.spec.whatwg.org/#eventtarget">See the API definition here</see></remarks>
 public class EventTarget : BaseJSWrapper
 {
     /// <summary>
@@ -16,7 +18,7 @@ public class EventTarget : BaseJSWrapper
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
-    public static EventTarget Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static EventTarget CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         EventTarget eventTarget = new(jSRuntime, jSReference);
         return eventTarget;
@@ -54,7 +56,7 @@ public class EventTarget : BaseJSWrapper
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    protected EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    protected internal EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
     /// Appends an event listener for events whose type attribute value is type.

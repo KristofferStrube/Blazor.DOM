@@ -21,6 +21,10 @@ export function registerEventHandlerAsync(objRef, jSInstance) {
     jSInstance.handleEvent = (e) => objRef.invokeMethodAsync("HandleEventAsync", DotNet.createJSObjectReference(e))
 }
 
+export function registerInProcessEventHandlerAsync(objRef, jSInstance) {
+    jSInstance.handleEvent = (e) => objRef.invokeMethodAsync("HandleEventInProcessAsync", DotNet.createJSObjectReference(e))
+}
+
 export function constructEvent(type, eventInitDict = null) {
     return new Event(type, eventInitDict);
 }

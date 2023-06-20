@@ -4,17 +4,18 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
-/// <see href="https://dom.spec.whatwg.org/#abortsignal">AbortSignal browser specs</see>
+/// An object that holds a reason for why some action was aborted.
 /// </summary>
+/// <remarks><see href="https://dom.spec.whatwg.org/#abortsignal">See the API definition here</see></remarks>
 public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, IJSCreatable<TAbortEvent>
 {
     /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal"/>.
+    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal{TAbortEvent}"/>.
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
-    public static new AbortSignal<TAbortEvent> Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal{TAbortEvent}"/>.</param>
+    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
+    public static AbortSignal<TAbortEvent> Create(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         AbortSignal<TAbortEvent> abortSignal = new(jSRuntime, jSReference);
         return abortSignal;
@@ -25,7 +26,7 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
     public static async Task<AbortSignal<TAbortEvent>> Abort(IJSRuntime jSRuntime, string? reason)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.abort", reason);
@@ -37,7 +38,7 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
     public static async Task<AbortSignal<TAbortEvent>> Abort(IJSRuntime jSRuntime, IJSObjectReference? reason)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.abort", reason);
@@ -49,17 +50,22 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="milliseconds">The duration before timeout.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
     public static async Task<AbortSignal<TAbortEvent>> Timeout(IJSRuntime jSRuntime, ulong milliseconds)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.timeout", milliseconds);
         return new AbortSignal<TAbortEvent>(jSRuntime, jSInstance);
     }
 
+    /// <summary>
+    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal{TAbortEvent}"/>.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal{TAbortEvent}"/>.</param>
     protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
-    /// Gets the aborted flag of this <see cref="AbortSignal"/>.
+    /// Gets the aborted flag of this <see cref="AbortSignal{TAbortEvent}"/>.
     /// </summary>
     /// <returns>Returns <see langword="true"/> if signal’s AbortController has signaled to abort; otherwise false.</returns>
     public async Task<bool> GetAbortedAsync()
@@ -69,7 +75,7 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     }
 
     /// <summary>
-    /// Gets the reason for this <see cref="AbortSignal"/>.
+    /// Gets the reason for this <see cref="AbortSignal{TAbortEvent}"/>.
     /// </summary>
     /// <returns>Returns signal’s abort reason.</returns>
     public async Task<IJSObjectReference> GetReasonAsync()

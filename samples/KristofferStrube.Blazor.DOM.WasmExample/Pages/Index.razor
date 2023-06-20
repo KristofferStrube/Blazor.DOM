@@ -29,49 +29,35 @@
     <p>
         Try moving your pointer over this area or click it slowly.
     </p>
-    @if (type != string.Empty)
+    @if (eventInProcess is not null)
     {
-        <div>The type was: <code>@type</code></div>
-        <div>The event phase was: <code>@eventPhase</code></div>
-        <div>It bubbles: <code>@bubbles</code></div>
-        <div>It is cancelable: <code>@cancelable</code></div>
-        <div>It is defaultPrevented: <code>@defaultPrevented</code></div>
-        <div>It is composed: <code>@composed</code></div>
-        <div>It is trusted: <code>@isTrusted</code></div>
-        <div>It was made at : <code>@timeStamp</code></div>
+        <div>The type was: <code>@eventInProcess.Type</code></div>
+        <div>The event phase was: <code>@eventInProcess.EventPhase</code></div>
+        <div>It bubbles: <code>@eventInProcess.Bubbles</code></div>
+        <div>It is cancelable: <code>@eventInProcess.Cancelable</code></div>
+        <div>It is defaultPrevented: <code>@eventInProcess.DefaultPrevented</code></div>
+        <div>It is composed: <code>@eventInProcess.Composed</code></div>
+        <div>It is trusted: <code>@eventInProcess.IsTrusted</code></div>
+        <div>It was made at : <code>@eventInProcess.TimeStamp</code></div>
     }
 </div>
 
 @code {
     ElementReference DivRef;
-    EventListener<Event>? callback;
+    EventListenerInProcess<EventInProcess, Event>? callback;
     bool subscribed = false;
 
-    string type = string.Empty;
-    string eventPhase = string.Empty;
-    bool bubbles;
-    bool cancelable;
-    bool defaultPrevented;
-    bool composed;
-    bool isTrusted;
-    double timeStamp;
+    EventInProcess? eventInProcess;
 
     protected override async Task OnInitializedAsync()
     {
-        callback = await EventListener<Event>.CreateAsync(JSRuntime, async (e) =>
+        callback = await EventListenerInProcess<EventInProcess, Event>.CreateAsync(JSRuntime, (e) =>
         {
-            type = await e.GetTypeAsync();
-            if (type is "pointerdown")
+            eventInProcess = e;
+            if (e.Type is "pointerdown")
             {
-                await e.PreventDefaultAsync();
+                e.PreventDefault();
             }
-            eventPhase = (await e.GetEventPhaseAsync()).ToString();
-            bubbles = await e.GetBubblesAsync();
-            cancelable = await e.GetCancelableAsync();
-            defaultPrevented = await e.GetDefaultPreventedAsync();
-            composed = await e.GetDefaultPreventedAsync();
-            isTrusted = await e.GetIsTrustedAsync();
-            timeStamp = await e.GetTimeStampAsync();
             StateHasChanged();
         });
         await SubscribeAsync();
@@ -79,23 +65,25 @@
 
     protected async Task SubscribeAsync()
     {
-        var divTarget = await EventTarget.CreateAsync(JSRuntime, DivRef);
-        await divTarget.AddEventListenerAsync("pointerdown", callback);
-        await divTarget.AddEventListenerAsync("pointermove", callback);
-        await divTarget.AddEventListenerAsync("pointerup", callback);
-        await divTarget.AddEventListenerAsync("pointerleave", callback);
+        // Sample of creating an in-process EventTarget.
+        var divTarget = await EventTargetInProcess.CreateAsync(JSRuntime, DivRef);
+        divTarget.AddEventListener("pointerdown", callback);
+        divTarget.AddEventListener("pointermove", callback);
+        divTarget.AddEventListener("pointerup", callback);
+        divTarget.AddEventListener("pointerleave", callback);
         subscribed = true;
     }
 
     protected async Task UnsubscribeAsync()
     {
+        // Sample of creating an an asynchronous EventTarget that can also be used in Blazor Server projects.
         var divTarget = await EventTarget.CreateAsync(JSRuntime, DivRef);
         await divTarget.RemoveEventListenerAsync("pointerdown", callback);
         await divTarget.RemoveEventListenerAsync("pointermove", callback);
         await divTarget.RemoveEventListenerAsync("pointerup", callback);
         await divTarget.RemoveEventListenerAsync("pointerleave", callback);
         subscribed = false;
-        type = string.Empty;
+        eventInProcess = null;
     }
 
     protected async Task DispatchEvent()

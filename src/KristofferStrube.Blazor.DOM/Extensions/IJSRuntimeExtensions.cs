@@ -2,14 +2,25 @@
 
 namespace KristofferStrube.Blazor.DOM.Extensions;
 
-internal static class IJSRuntimeExtensions
+/// <summary>
+/// Extension methods for getting helper tasks for JSInterop.
+/// </summary>
+public static class IJSRuntimeExtensions
 {
-    internal static async Task<IJSObjectReference> GetHelperAsync(this IJSRuntime jSRuntime)
+    /// <summary>
+    /// Gets a helper that enables asynchronous invocation of helper methods.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    public static async Task<IJSObjectReference> GetHelperAsync(this IJSRuntime jSRuntime)
     {
         return await GetHelperAsync<IJSObjectReference>(jSRuntime);
     }
 
-    internal static async Task<IJSInProcessObjectReference> GetInProcessHelperAsync(this IJSRuntime jSRuntime)
+    /// <summary>
+    /// Gets a helper that enables synchronous invocation of helper methods.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    public static async Task<IJSInProcessObjectReference> GetInProcessHelperAsync(this IJSRuntime jSRuntime)
     {
         return await GetHelperAsync<IJSInProcessObjectReference>(jSRuntime);
     }

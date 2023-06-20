@@ -5,8 +5,11 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM.Abort;
 
 /// <summary>
-/// <see href="https://dom.spec.whatwg.org/#abortcontroller">AbortController browser specs</see>
+/// Though promises do not have a built-in aborting mechanism, many APIs using them require abort semantics.
+/// <see cref="AbortController"/> is meant to support these requirements by providing an <see cref="AbortAsync(IJSObjectReference?)"/> method that toggles the state of a corresponding <see cref="AbortSignal{TAbortEvent}"/> object.
+/// The API which wishes to support aborting can accept an <see cref="AbortSignal{TAbortEvent}"/> object, and use its state to determine how to proceed.
 /// </summary>
+/// <remarks><see href="https://dom.spec.whatwg.org/#abortcontroller">See the API definition here</see></remarks>
 internal class AbortController : BaseJSWrapper
 {
     /// <summary>

@@ -5,13 +5,26 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
-/// <see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">EventListener browser specs</see>
+/// An <see cref="EventListener{TEvent}" /> can be used to observe a specific <see cref="Event"/>.
 /// </summary>
+/// <remarks><see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">See the API definition here</see></remarks>
 public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCreatable<TEvent>
 {
-    private Action<TEvent>? callback;
-    private Func<TEvent, Task>? asyncCallback;
+    /// <summary>
+    /// The synchronous callback.
+    /// </summary>
+    protected Action<TEvent>? callback;
+    /// <summary>
+    /// The asynchronous callback.
+    /// </summary>
+    protected Func<TEvent, Task>? asyncCallback;
 
+    /// <summary>
+    /// Constructs a wrapper instance using the standard constructor.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="callback">The action that will be invoked once the event happen.</param>
+    /// <returns>A wrapper instance for a <see cref="EventListener{TEvent}"/>.</returns>
     public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Action<TEvent> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
@@ -24,6 +37,12 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
         return eventListener;
     }
 
+    /// <summary>
+    /// Constructs a wrapper instance using the standard constructor.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="callback">The async action that will be invoked once the event happen.</param>
+    /// <returns>A wrapper instance for a <see cref="EventListener{TEvent}"/>.</returns>
     public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Func<TEvent, Task> callback)
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
@@ -36,10 +55,17 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
         return eventListener;
     }
 
-    protected EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
-    {
-    }
+    /// <summary>
+    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventListener{TEvent}"/>.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="jSReference">A JS reference to an existing <see cref="EventListener{TEvent}"/>.</param>
+    protected EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
+    /// <summary>
+    /// The method that will be invoked from JS when the event happens which will invoke the action that this <see cref="EventListener{TEvent}"/> was constructed from.
+    /// </summary>
+    /// <param name="jSObjectReference">A JS reference to the event.</param>
     [JSInvokable]
     public async Task HandleEventAsync(IJSObjectReference jSObjectReference)
     {

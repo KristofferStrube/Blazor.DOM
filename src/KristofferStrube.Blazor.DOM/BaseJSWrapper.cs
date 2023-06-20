@@ -4,10 +4,20 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
+/// <summary>
+/// A base class for all wrapper classes from the Blazor.DOM library.
+/// </summary>
 public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
 {
+    /// <summary>
+    /// A lazily loaded task that provide access to JS helper functions.
+    /// </summary>
     protected readonly Lazy<Task<IJSObjectReference>> helperTask;
+
+    /// <inheritdoc/>
     public IJSObjectReference JSReference { get; }
+
+    /// <inheritdoc/>
     public IJSRuntime JSRuntime { get; }
 
     /// <summary>
@@ -19,9 +29,10 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
     {
         helperTask = new(jSRuntime.GetHelperAsync);
         JSReference = jSReference;
-        this.JSRuntime = jSRuntime;
+        JSRuntime = jSRuntime;
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         if (helperTask.IsValueCreated)

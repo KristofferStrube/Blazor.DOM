@@ -1,13 +1,13 @@
-﻿using KristofferStrube.Blazor.DOM.Events;
-using KristofferStrube.Blazor.DOM.Extensions;
+﻿using KristofferStrube.Blazor.DOM.Extensions;
 using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
-/// <see href="https://dom.spec.whatwg.org/#event">Event browser specs</see>
+/// An <see cref="Event"/> object is simply named an event. It allows for signaling that something has occurred, e.g., that an image has completed downloading.
 /// </summary>
+/// <remarks><see href="https://dom.spec.whatwg.org/#event">See the API definition here</see></remarks>
 public class Event : BaseJSWrapper, IJSCreatable<Event>
 {
     /// <summary>
@@ -26,6 +26,8 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     /// Constructs a wrapper instance using the standard constructor.
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="type">The type of the new <see cref="Event"/>.</param>
+    /// <param name="eventInitDict">Extra options for setting whether the event bubbles and is cancelable.</param>
     /// <returns>A wrapper instance for a <see cref="Event"/>.</returns>
     public static async Task<Event> CreateAsync(IJSRuntime jSRuntime, string type, EventInit? eventInitDict = null)
     {
@@ -60,7 +62,7 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "target");
-        return jSInstance is null ? null : EventTarget.Create(JSRuntime, jSInstance);
+        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "currentTarget");
-        return jSInstance is null ? null : EventTarget.Create(JSRuntime, jSInstance);
+        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance);
     }
 
     /// <summary>
@@ -85,14 +87,13 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
         int length = await helper.InvokeAsync<int>("getAttribute", jSArray, "length");
         return (await Task.WhenAll(Enumerable
             .Range(0, length)
-            .Select(async i => EventTarget.Create(JSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
+            .Select(async i => new EventTarget(JSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
             .ToArray();
     }
 
     /// <summary>
     /// Gets this <see cref="Event"/>'s phase.
     /// </summary>
-    /// <returns>The event’s phase, which is one of <see cref="EventPhase.None"/>, <see cref="EventPhase.CapturingPhase"/>, <see cref="EventPhase.AtTarget"/>, and <see cref="EventPhase.BubblingPhase"/>.</returns>
     public async Task<EventPhase> GetEventPhaseAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -117,9 +118,8 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     }
 
     /// <summary>
-    /// Returns <see langword="true"/> or <see langword="false"/> depending on how the event was initialized.
+    /// Returns <see langword="true"/> if the event goes through its target’s ancestors in reverse tree order; otherwise <see langword="false"/>.
     /// </summary>
-    /// <returns><see langword="true"/> if event goes through its target’s ancestors in reverse tree order; otherwise <see langword="false"/>.</returns>
     public async Task<bool> GetBubblesAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -145,9 +145,8 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     }
 
     /// <summary>
-    /// Returns <see langword="true"/> or <see langword="false"/> depending on how the event was initialized.
+    /// Returns <see langword="true"/> if <see cref="PreventDefaultAsync"/> was invoked successfully to indicate cancelation; otherwise <see langword="false"/>.
     /// </summary>
-    /// <returns><see langword="true"/> if <see cref="PreventDefaultAsync"/> was invoked successfully to indicate cancelation; otherwise <see langword="false"/>.</returns>
     public async Task<bool> GetDefaultPreventedAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -155,9 +154,9 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     }
 
     /// <summary>
-    /// Returns <see langword="true"/> or <see langword="false"/> depending on how the event was initialized.
+    /// Returns <see langword="true"/> if the event invokes listeners past a ShadowRoot node that is the root of its target; otherwise <see langword="false"/>.
     /// </summary>
-    /// <returns><see langword="true"/> if event invokes listeners past a ShadowRoot node that is the root of its target; otherwise <see langword="false"/>.</returns>
+    /// <returns></returns>
     public async Task<bool> GetComposedAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -165,9 +164,8 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     }
 
     /// <summary>
-    /// Gets the the flag <c>isTrusted</c> of this <see cref="Event"/>.
+    /// Returns <see langword="true"/> if the event was dispatched by the user agent, and <see langword="false"/> otherwise.
     /// </summary>
-    /// <returns><see langword="true"/> if event was dispatched by the user agent, and <see langword="false"/> otherwise.</returns>
     public async Task<bool> GetIsTrustedAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -175,9 +173,8 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     }
 
     /// <summary>
-    /// Gets the the flag <c>isTrusted</c> of this <see cref="Event"/>.
+    /// Returns the event’s timestamp as the number of milliseconds measured relative to the <see href="https://w3c.github.io/hr-time/#dfn-get-time-origin-timestamp">time origin</see>.
     /// </summary>
-    /// <returns>The event’s timestamp as the number of milliseconds measured relative to the <see href="https://w3c.github.io/hr-time/#dfn-get-time-origin-timestamp">time origin</see>.</returns>
     public async Task<double> GetTimeStampAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
