@@ -59,8 +59,8 @@ public class EventTarget : BaseJSWrapper
     protected internal EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
 
     /// <summary>
-    /// Appends an event listener for events whose type attribute value is type.
-    /// The event listener is appended to target’s event listener list and is not appended if it has the same type, callback, and capture.
+    /// Appends an event listener for events whose type attribute value is <paramref name="type"/>.
+    /// The <see cref="EventListener{TEvent}"/> is appended to target’s <see cref="EventListener{TEvent}"/> list and is not appended if it has the same type, callback, and capture.
     /// </summary>
     /// <param name="type">The type of events that the event listener will listen to.</param>
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
@@ -73,7 +73,8 @@ public class EventTarget : BaseJSWrapper
     }
 
     /// <summary>
-    /// Appends an <see cref="EventListener{TEvent}"/> for events whose type attribute value is type. The <see cref="EventListener{TEvent}"/> is appended to target’s <see cref="EventListener{TEvent}"/> list and is not appended if it has the same type, callback, and capture. The type is implicitly set to the <see langword="nameof"/> concrete <see cref="Event"/> type for this <see cref="EventListener{TEvent}"/> for this overload.
+    /// Appends an <see cref="EventListener{TEvent}"/> for events whose type attribute value is name is the name of the type.
+    /// The <see cref="EventListener{TEvent}"/> is appended to target’s <see cref="EventListener{TEvent}"/> list and is not appended if it has the same type, callback, and capture.
     /// </summary>
     /// <param name="callback">The callback argument sets the callback that will be invoked when the event is dispatched.</param>
     /// <param name="options">The options argument sets listener-specific options.</param>
@@ -110,7 +111,7 @@ public class EventTarget : BaseJSWrapper
     }
 
     /// <summary>
-    /// Dispatches a synthetic <see cref="Event"/> <paramref name="eventInstance"/> to target.
+    /// Dispatches a synthetic <see cref="Event"/> to target.
     /// </summary>
     /// <param name="eventInstance">The event you will dispatch.</param>
     /// <returns>Returns <see langword="true"/> if either event’s cancelable attribute value is <see langword="false"/> or its preventDefault() method was not invoked; otherwise <see langword="false"/>.</returns>
