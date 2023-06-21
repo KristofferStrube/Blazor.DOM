@@ -11,12 +11,10 @@ The API standardizes a lot of the most basic structures for working within the b
 
 *The project will not focus on the part of the API related to Nodes as this often leads to misuse of Blazor by circumventing the Blazor rendering engine.*
 
-**This project is still being developer so coverage is very limited.**
-
 # Demo
 The sample project can be demoed at https://kristofferstrube.github.io/Blazor.DOM/
 
-On each page you can find the corresponding code for the example in the top right corner.
+On each page, you can find the corresponding code for the example in the top right corner.
 
 On the [Status page](https://kristofferstrube.github.io/Blazor.DOM/Status) you can see how much of the WebIDL specs this wrapper has covered.
 
@@ -24,17 +22,23 @@ On the [Status page](https://kristofferstrube.github.io/Blazor.DOM/Status) you c
 Feel free to open issues on the repository if you find any errors with the package or have wishes for features.
 
 # Related repositories
-This project is going to be used in these projects:
+This project uses the `IJSCreatable` interface from the *Blazor.WebIDL* package to define that `Event`s should be able to construct themselves given a JS reference.
+- https://github.com/KristofferStrube/Blazor.WebIDL
+
+Many classes from the *Blazor.CSSFontLoading*, *Blazor.MediaCaptureStreams*, and *Blazor.WebAudio* projects extend the `EventTarget` class from this library to be able to dispatch and listen to events.
+- https://github.com/KristofferStrube/Blazor.MediaCaptureStreams
+- https://github.com/KristofferStrube/Blazor.WebAudio
+- https://github.com/KristofferStrube/Blazor.CSSFontLoading
+
+These repositories are going to use the library in the future to support a variety of features.
 - https://github.com/KristofferStrube/Blazor.Streams (uses AbortSignals and Events)
 - https://github.com/KristofferStrube/Blazor.FileAPI (uses Events)
 - https://github.com/KristofferStrube/Blazor.FileSystemAccess (uses Events)
-- https://github.com/KristofferStrube/Blazor.CSSFontLoading (uses Events)
 
-This project is going to be used in these projects that haven't been build yet because they are missing key features from this project:
-- Blazor.UIEvent - API specifying the common UI events like MouseEvent, DragEvent, etc. (uses Events)
+This project is going to be used in the *Blazor.UIEvent* project but we have not started progress on wrapping the *UI Event API* yet.
 
 # Related articles
-This repository was build with inspiration and help from the following series of articles:
+This repository was built with inspiration and help from the following series of articles:
 
 - [Wrapping JavaScript libraries in Blazor WebAssembly/WASM](https://blog.elmah.io/wrapping-javascript-libraries-in-blazor-webassembly-wasm/)
 - [Call anonymous C# functions from JS in Blazor WASM](https://blog.elmah.io/call-anonymous-c-functions-from-js-in-blazor-wasm/)
