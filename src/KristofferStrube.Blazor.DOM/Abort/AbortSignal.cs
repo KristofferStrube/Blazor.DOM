@@ -4,20 +4,22 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
-/// An object that holds a reason for why some action was aborted.
+/// An object that holds a reason for why some action was aborted if it was aborted.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#abortsignal">See the API definition here</see></remarks>
-public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, IJSCreatable<TAbortEvent>
+[IJSWrapperConverter]
+public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal{TAbortEvent}"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal{TAbortEvent}"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
-    public static new Task<AbortSignal<TAbortEvent>> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static async Task<AbortSignal> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult<AbortSignal<TAbortEvent>>(new(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static new Task<AbortSignal> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult<AbortSignal>(new(jSRuntime, jSReference, options));
     }
 
     /// <summary>
@@ -25,11 +27,11 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
-    public static async Task<AbortSignal<TAbortEvent>> Abort(IJSRuntime jSRuntime, string? reason)
+    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    public static async Task<AbortSignal> Abort(IJSRuntime jSRuntime, string? reason)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.abort", reason);
-        return new AbortSignal<TAbortEvent>(jSRuntime, jSInstance);
+        return new AbortSignal(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -37,11 +39,11 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
-    public static async Task<AbortSignal<TAbortEvent>> Abort(IJSRuntime jSRuntime, IJSObjectReference? reason)
+    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    public static async Task<AbortSignal> Abort(IJSRuntime jSRuntime, IJSObjectReference? reason)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.abort", reason);
-        return new AbortSignal<TAbortEvent>(jSRuntime, jSInstance);
+        return new AbortSignal(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -49,22 +51,18 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="milliseconds">The duration before timeout.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortSignal{TAbortEvent}"/>.</returns>
-    public static async Task<AbortSignal<TAbortEvent>> Timeout(IJSRuntime jSRuntime, ulong milliseconds)
+    /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
+    public static async Task<AbortSignal> Timeout(IJSRuntime jSRuntime, ulong milliseconds)
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("AbortSignal.timeout", milliseconds);
-        return new AbortSignal<TAbortEvent>(jSRuntime, jSInstance);
+        return new AbortSignal(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortSignal{TAbortEvent}"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="AbortSignal{TAbortEvent}"/>.</param>
-    protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    /// <inheritdoc/>
+    protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
 
     /// <summary>
-    /// Gets the aborted flag of this <see cref="AbortSignal{TAbortEvent}"/>.
+    /// Gets the aborted flag of this <see cref="AbortSignal"/>.
     /// </summary>
     /// <returns>Returns <see langword="true"/> if signal’s AbortController has signaled to abort; otherwise false.</returns>
     public async Task<bool> GetAbortedAsync()
@@ -74,7 +72,7 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     }
 
     /// <summary>
-    /// Gets the reason for this <see cref="AbortSignal{TAbortEvent}"/>.
+    /// Gets the reason for this <see cref="AbortSignal"/>.
     /// </summary>
     /// <returns>Returns signal’s abort reason.</returns>
     public async Task<IJSObjectReference> GetReasonAsync()
@@ -95,9 +93,32 @@ public class AbortSignal<TAbortEvent> : EventTarget where TAbortEvent : Event, I
     /// <summary>
     /// The onabort attribute is an event handler IDL attribute for the onabort event handler, whose event handler event type is abort.
     /// </summary>
-    public event Func<EventListener<TAbortEvent>?> OnAbort
+    [Obsolete("Use AddOnAbortEventListener and RemoveOnAbortEventListener instead as it is more memory safe.")]
+    public event Func<EventListener<Event>?> OnAbort
     {
         add => Task.Run(async () => await AddEventListenerAsync("abort", value.Invoke()));
         remove => Task.Run(async () => await RemoveEventListenerAsync("abort", value.Invoke()));
+    }
+
+    /// <summary>
+    /// Adds an <see cref="EventListener{TEvent}"/> for when the the signal is aborted.
+    /// </summary>
+    /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
+    /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
+    public async Task<EventListener<Event>> AddOnAbortEventListener(Func<Event, Task> callback, AddEventListenerOptions? options = null)
+    {
+        EventListener<Event> eventListener = await EventListener<Event>.CreateAsync(JSRuntime, callback);
+        await AddEventListenerAsync("abort", eventListener, options);
+        return eventListener;
+    }
+
+    /// <summary>
+    /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnAbortEventListener"/> previously.
+    /// </summary>
+    /// <param name="callback">The callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
+    /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
+    public async Task RemoveOnAbortEventListener(EventListener<Event> callback, EventListenerOptions? options = null)
+    {
+        await RemoveEventListenerAsync("abort", callback, options);
     }
 }

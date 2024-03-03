@@ -8,18 +8,19 @@ namespace KristofferStrube.Blazor.DOM;
 /// <see cref="Event"/>s using the <see cref="CustomEvent"/> interface can be used to carry custom data which is accessible using the <see cref="GetDetailAsync"/> method.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#customevent">See the API definition here</see></remarks>
+[IJSWrapperConverter]
 public class CustomEvent : Event, IJSCreatable<CustomEvent>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="CustomEvent"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="CustomEvent"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="CustomEvent"/>.</returns>
-    public static new Task<CustomEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static new async Task<CustomEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        CustomEvent eventInstance = new(jSRuntime, jSReference);
-        return Task.FromResult(eventInstance);
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static new Task<CustomEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new CustomEvent(jSRuntime, jSReference, options));
     }
 
     /// <summary>
@@ -33,16 +34,11 @@ public class CustomEvent : Event, IJSCreatable<CustomEvent>
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructCustomEvent", type, eventInitDict);
-        CustomEvent eventInstance = new(jSRuntime, jSInstance);
-        return eventInstance;
+        return new CustomEvent(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="CustomEvent"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="CustomEvent"/>.</param>
-    protected CustomEvent(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc/>
+    protected CustomEvent(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
     }
 

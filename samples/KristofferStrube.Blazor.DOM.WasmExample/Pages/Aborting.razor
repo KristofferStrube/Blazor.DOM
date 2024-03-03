@@ -1,0 +1,44 @@
+﻿@page "/Aborting"
+@using KristofferStrube.Blazor.DOM.Abort
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor.DOM - Custom Events</PageTitle>
+
+<h1>Custom Event</h1>
+
+<p>
+</p>
+
+@if (cts is null)
+{
+    <button class="btn btn-success" @onclick=RunNeverEndingFunction>Start invocation that doesn't stop</button>
+}
+else
+{
+    <button class="btn btn-warning" @onclick=Abort>Abort invocation</button>
+}
+
+@code {
+    CancellationTokenSource? cts;
+
+    private async Task RunNeverEndingFunction()
+    {
+        AbortController abortController = await AbortController.CreateAsync(JSRuntime);
+        AbortSignal signal = await abortController.GetSignalAsync();
+
+        cts = new();
+        CancellationToken cancellationToken = cts.Token;
+        cancellationToken.UnsafeRegister(async _ => await abortController.AbortAsync("stop"), null);
+
+        StateHasChanged();
+#pragma warning disable 4014
+        await JSRuntime.InvokeVoidAsync("neverEndingFunction", cancellationToken, signal);
+#pragma warning restore 4014
+    }
+
+    private void Abort()
+    {
+        cts!.Cancel();
+        cts = null;
+    }
+}

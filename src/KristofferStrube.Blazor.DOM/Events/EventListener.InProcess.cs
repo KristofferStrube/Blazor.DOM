@@ -1,6 +1,7 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
 using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
+using System.Diagnostics.Tracing;
 
 namespace KristofferStrube.Blazor.DOM;
 
@@ -8,13 +9,13 @@ namespace KristofferStrube.Blazor.DOM;
 public class EventListenerInProcess<TInProcessEvent> : EventListenerInProcess<TInProcessEvent, TInProcessEvent> where TInProcessEvent : Event, IJSInProcessCreatable<TInProcessEvent, TInProcessEvent>
 {
     /// <inheritdoc/>
-    protected EventListenerInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, inProcessHelper, jSReference)
+    protected EventListenerInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference, CreationOptions options) : base(jSRuntime, inProcessHelper, jSReference, options)
     {
     }
 }
 
 /// <inheritdoc/>
-public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEvent> where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
+public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEvent>, IJSInProcessCreatable<EventListenerInProcess<TInProcessEvent, TEvent>, EventListener<TEvent>> where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
 {
     /// <summary>
     /// The synchronous callback.
@@ -34,12 +35,24 @@ public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEv
     /// <inheritdoc cref="IJSWrapper.JSReference" />
     public new IJSInProcessObjectReference JSReference { get; }
 
+    /// <inheritdoc/>
+    public static Task<EventListenerInProcess<TInProcessEvent, TEvent>> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public static Task<EventListenerInProcess<TInProcessEvent, TEvent>> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference, CreationOptions options)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc cref="EventListener{TEvent}.CreateAsync(IJSRuntime, Action{TEvent})"/>
     public static async Task<EventListenerInProcess<TInProcessEvent, TEvent>> CreateAsync(IJSRuntime jSRuntime, Action<TInProcessEvent> callback)
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
         IJSInProcessObjectReference jSInstance = await helper.InvokeAsync<IJSInProcessObjectReference>("constructEventListener");
-        EventListenerInProcess<TInProcessEvent, TEvent> eventListener = new(jSRuntime, helper, jSInstance)
+        EventListenerInProcess<TInProcessEvent, TEvent> eventListener = new(jSRuntime, helper, jSInstance, new() { DisposesJSReference = true })
         {
             callback = callback
         };
@@ -52,7 +65,7 @@ public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEv
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
         IJSInProcessObjectReference jSInstance = await helper.InvokeAsync<IJSInProcessObjectReference>("constructEventListener");
-        EventListenerInProcess<TInProcessEvent, TEvent> eventListener = new(jSRuntime, helper, jSInstance)
+        EventListenerInProcess<TInProcessEvent, TEvent> eventListener = new(jSRuntime, helper, jSInstance, new() { DisposesJSReference = true })
         {
             asyncCallback = callback
         };
@@ -60,13 +73,8 @@ public class EventListenerInProcess<TInProcessEvent, TEvent> : EventListener<TEv
         return eventListener;
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventTarget"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="inProcessHelper">An in-process helper instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    protected EventListenerInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc cref="IJSInProcessCreatable{TInProcess, T}.CreateAsync(IJSRuntime, IJSInProcessObjectReference, CreationOptions)"/>
+    protected EventListenerInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         this.inProcessHelper = inProcessHelper;
         JSReference = jSReference;

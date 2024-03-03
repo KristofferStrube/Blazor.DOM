@@ -42,7 +42,16 @@
     </script>
 
     <script>
-        function getValue(obj) { return obj; } 
+        function getValue(obj) { return obj; }
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        async function neverEndingFunction(signal) {
+            while (!signal.aborted) {
+                await delay(100);
+                console.log("tick");
+            }
+        }
     </script>
 
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />

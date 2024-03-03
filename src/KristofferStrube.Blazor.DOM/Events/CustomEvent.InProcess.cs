@@ -21,12 +21,18 @@ public class CustomEventInProcess : CustomEvent, IJSInProcessCreatable<CustomEve
     /// <inheritdoc/>
     public static async Task<CustomEventInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
     {
-        IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
-        return new CustomEventInProcess(jSRuntime, helper, jSReference);
+        return await CreateAsync(jSRuntime, jSReference, new());
     }
 
     /// <inheritdoc/>
-    protected CustomEventInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, jSReference)
+    public static async Task<CustomEventInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference, CreationOptions options)
+    {
+        IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
+        return new CustomEventInProcess(jSRuntime, helper, jSReference, options);
+    }
+
+    /// <inheritdoc/>
+    protected CustomEventInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         this.inProcessHelper = inProcessHelper;
         JSReference = jSReference;

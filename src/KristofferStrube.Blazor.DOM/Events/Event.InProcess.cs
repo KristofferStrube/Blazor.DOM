@@ -18,8 +18,13 @@ public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event
     /// <inheritdoc/>
     public static async Task<EventInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
     {
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    public static async Task<EventInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference, CreationOptions options)
+    {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
-        return new(jSRuntime, helper, jSReference);
+        return new(jSRuntime, helper, jSReference, options);
     }
 
     /// <summary>
@@ -33,16 +38,11 @@ public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
         IJSInProcessObjectReference jSInstance = await helper.InvokeAsync<IJSInProcessObjectReference>("constructEvent", type, eventInitDict);
-        return new(jSRuntime, helper, jSInstance);
+        return new(jSRuntime, helper, jSInstance, new() { DisposesJSReference = true });
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventInProcess"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="inProcessHelper">An in-process helper instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventInProcess"/>.</param>
-    protected EventInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc/>
+    protected EventInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         this.inProcessHelper = inProcessHelper;
         JSReference = jSReference;
@@ -60,7 +60,7 @@ public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event
     {
         IJSInProcessObjectReference? jSInstance = await inProcessHelper.InvokeAsync<IJSInProcessObjectReference?>("getAttribute", JSReference, "target");
         IJSInProcessObjectReference helper = await JSRuntime.GetInProcessHelperAsync();
-        return jSInstance is null ? null : new EventTargetInProcess(JSRuntime, helper, jSInstance);
+        return jSInstance is null ? null : new EventTargetInProcess(JSRuntime, helper, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event
     {
         IJSInProcessObjectReference? jSInstance = await inProcessHelper.InvokeAsync<IJSInProcessObjectReference?>("getAttribute", JSReference, "currentTarget");
         IJSInProcessObjectReference helper = await JSRuntime.GetInProcessHelperAsync();
-        return jSInstance is null ? null : new EventTargetInProcess(JSRuntime, helper, jSInstance);
+        return jSInstance is null ? null : new EventTargetInProcess(JSRuntime, helper, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>

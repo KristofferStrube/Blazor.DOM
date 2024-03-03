@@ -8,7 +8,8 @@ namespace KristofferStrube.Blazor.DOM;
 /// An <see cref="EventListener{TEvent}" /> can be used to observe a specific <see cref="Event"/>.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">See the API definition here</see></remarks>
-public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCreatable<TEvent>
+[IJSWrapperConverter]
+public class EventListener<TEvent> : BaseJSWrapper, IJSCreatable<EventListener<TEvent>> where TEvent : Event, IJSCreatable<TEvent>
 {
     /// <summary>
     /// The synchronous callback.
@@ -18,6 +19,18 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
     /// The asynchronous callback.
     /// </summary>
     protected Func<TEvent, Task>? asyncCallback;
+
+    /// <inheritdoc/>
+    public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    {
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new EventListener<TEvent>(jSRuntime, jSReference, options));
+    }
 
     /// <summary>
     /// Constructs a wrapper instance using the standard constructor.
@@ -29,7 +42,7 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance)
+        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance, new() { DisposesJSReference = true })
         {
             callback = callback
         };
@@ -47,7 +60,7 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
-        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance)
+        EventListener<TEvent> eventListener = new(jSRuntime, jSInstance, new() { DisposesJSReference = true })
         {
             asyncCallback = callback
         };
@@ -55,12 +68,8 @@ public class EventListener<TEvent> : BaseJSWrapper where TEvent : Event, IJSCrea
         return eventListener;
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventListener{TEvent}"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventListener{TEvent}"/>.</param>
-    protected EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    /// <inheritdoc/>
+    protected EventListener(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
 
     /// <summary>
     /// The method that will be invoked from JS when the event happens which will invoke the action that this <see cref="EventListener{TEvent}"/> was constructed from.
