@@ -7,7 +7,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <summary>
 /// A base class for all wrapper classes from the Blazor.DOM library.
 /// </summary>
-public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
+public abstract class BaseJSWrapper : IJSWrapper
 {
     /// <summary>
     /// A lazily loaded task that provide access to JS helper functions.

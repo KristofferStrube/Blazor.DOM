@@ -42,12 +42,12 @@ interface Event {
     readonly attribute unsigned short eventPhase;
 
     undefined stopPropagation();
-                     attribute boolean cancelBubble; // legacy alias of .stopPropagation()
+    attribute boolean cancelBubble; // legacy alias of .stopPropagation()
     undefined stopImmediatePropagation();
 
     readonly attribute boolean bubbles;
     readonly attribute boolean cancelable;
-                     attribute boolean returnValue;    // legacy
+    attribute boolean returnValue;    // legacy
     undefined preventDefault();
     readonly attribute boolean defaultPrevented;
     readonly attribute boolean composed;

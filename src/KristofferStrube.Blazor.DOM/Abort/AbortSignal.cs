@@ -1,4 +1,5 @@
 ﻿using KristofferStrube.Blazor.WebIDL;
+using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM;
@@ -10,6 +11,8 @@ namespace KristofferStrube.Blazor.DOM;
 [IJSWrapperConverter]
 public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
 {
+    private readonly ErrorHandlingJSObjectReference errorHandlingJSReference;
+
     /// <inheritdoc/>
     public static async Task<AbortSignal> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
@@ -23,10 +26,10 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     }
 
     /// <summary>
-    /// Returns an AbortSignal instance whose abort reason is set to reason if not undefined; otherwise to an "AbortError" DOMException.
+    /// Returns an <see cref="AbortSignal"/> instance whose abort reason is set to reason if not undefined; otherwise to an <see cref="AbortErrorException"/>.
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
     /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
     public static async Task<AbortSignal> Abort(IJSRuntime jSRuntime, string? reason)
     {
@@ -35,10 +38,10 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     }
 
     /// <summary>
-    /// Returns an AbortSignal instance whose abort reason is set to reason if not undefined; otherwise to an "AbortError" DOMException.
+    /// Returns an <see cref="AbortSignal"/> instance whose abort reason is set to reason if not undefined; otherwise to an <see cref="AbortErrorException"/>.
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="reason">The associated abort reason, which is a JavaScript value.</param>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
     /// <returns>A wrapper instance for a <see cref="AbortSignal"/>.</returns>
     public static async Task<AbortSignal> Abort(IJSRuntime jSRuntime, IJSObjectReference? reason)
     {
@@ -59,12 +62,15 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     }
 
     /// <inheritdoc/>
-    protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
+    protected AbortSignal(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
+    {
+        errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSRuntime, jSReference);
+    }
 
     /// <summary>
     /// Gets the aborted flag of this <see cref="AbortSignal"/>.
     /// </summary>
-    /// <returns>Returns <see langword="true"/> if signal’s AbortController has signaled to abort; otherwise false.</returns>
+    /// <returns>Returns <see langword="true"/> if signal’s AbortController has signaled to abort; otherwise <see langword="false"/>.</returns>
     public async Task<bool> GetAbortedAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
@@ -84,16 +90,15 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     /// <summary>
     /// Throws signal’s abort reason, if signal’s AbortController has signaled to abort; otherwise, does nothing.
     /// </summary>
-    /// <returns></returns>
     public async Task ThrowIfAbortedAsync()
     {
-        await JSReference.InvokeVoidAsync("throwIfAborted");
+        await errorHandlingJSReference.InvokeVoidAsync("throwIfAborted");
     }
 
     /// <summary>
     /// The onabort attribute is an event handler IDL attribute for the onabort event handler, whose event handler event type is abort.
     /// </summary>
-    [Obsolete("Use AddOnAbortEventListener and RemoveOnAbortEventListener instead as it is more memory safe.")]
+    [Obsolete("Use AddOnAbortEventListener and RemoveOnAbortEventListener instead as it is more memory safe. This event will be removed in the next major version of the library.")]
     public event Func<EventListener<Event>?> OnAbort
     {
         add => Task.Run(async () => await AddEventListenerAsync("abort", value.Invoke()));

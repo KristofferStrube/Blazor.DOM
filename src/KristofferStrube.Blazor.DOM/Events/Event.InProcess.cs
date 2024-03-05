@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <inheritdoc/>
+[IJSWrapperConverter]
 public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event>
 {
     /// <summary>
@@ -21,6 +22,7 @@ public class EventInProcess : Event, IJSInProcessCreatable<EventInProcess, Event
         return await CreateAsync(jSRuntime, jSReference, new());
     }
 
+    /// <inheritdoc/>
     public static async Task<EventInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference, CreationOptions options)
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();

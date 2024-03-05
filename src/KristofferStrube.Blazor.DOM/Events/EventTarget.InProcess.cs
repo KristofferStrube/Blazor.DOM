@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <inheritdoc/>
+[IJSWrapperConverter]
 public class EventTargetInProcess : EventTarget, IEventTargetInProcess, IJSInProcessCreatable<EventTargetInProcess, EventTarget>
 {
     /// <summary>

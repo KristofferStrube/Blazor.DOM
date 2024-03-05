@@ -1,12 +1,13 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
 using KristofferStrube.Blazor.WebIDL;
+using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM.Abort;
 
 /// <summary>
 /// Though promises do not have a built-in aborting mechanism, many APIs using them require abort semantics.
-/// <see cref="AbortController"/> is meant to support these requirements by providing an <see cref="AbortAsync(IJSObjectReference?)"/> method that toggles the state of a corresponding <see cref="AbortSignal{TAbortEvent}"/> object.
+/// <see cref="AbortController"/> is meant to support these requirements by providing an <see cref="AbortAsync(IJSObjectReference?)"/> method that toggles the state of a corresponding <see cref="AbortSignal"/> object.
 /// The API which wishes to support aborting can accept an <see cref="AbortSignal"/> object, and use its state to determine how to proceed.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#abortcontroller">See the API definition here</see></remarks>
@@ -54,13 +55,41 @@ public class AbortController : BaseJSWrapper, IJSCreatable<AbortController>
         return await AbortSignal.CreateAsync(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
-    public async Task AbortAsync(string? reason = null)
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(string reason)
     {
         await JSReference.InvokeVoidAsync("abort", reason);
     }
 
-    public async Task AbortAsync(IJSObjectReference? reason = null)
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(IJSObjectReference reason)
     {
         await JSReference.InvokeVoidAsync("abort", reason);
+    }
+
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(IJSWrapper reason)
+    {
+        await JSReference.InvokeVoidAsync("abort", reason?.JSReference);
+    }
+
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// </summary>
+    public async Task AbortAsync()
+    {
+        await JSReference.InvokeVoidAsync("abort");
     }
 }

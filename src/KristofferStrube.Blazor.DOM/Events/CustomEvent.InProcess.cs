@@ -8,6 +8,7 @@ namespace KristofferStrube.Blazor.DOM;
 /// <see cref="Event"/>s using the <see cref="CustomEvent"/> interface can be used to carry custom data which is accessible from <see cref="Detail"/>.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#customevent">See the API definition here</see></remarks>
+[IJSWrapperConverter]
 public class CustomEventInProcess : CustomEvent, IJSInProcessCreatable<CustomEventInProcess, CustomEvent>
 {
     /// <summary>

@@ -20,15 +20,16 @@ else
 
 @code {
     CancellationTokenSource? cts;
+    AbortSignal signal;
 
     private async Task RunNeverEndingFunction()
     {
         AbortController abortController = await AbortController.CreateAsync(JSRuntime);
-        AbortSignal signal = await abortController.GetSignalAsync();
+        signal = await abortController.GetSignalAsync();
 
         cts = new();
         CancellationToken cancellationToken = cts.Token;
-        cancellationToken.UnsafeRegister(async _ => await abortController.AbortAsync("stop"), null);
+        cancellationToken.UnsafeRegister(async _ => await abortController.AbortAsync(), null);
 
         StateHasChanged();
 #pragma warning disable 4014
@@ -36,7 +37,7 @@ else
 #pragma warning restore 4014
     }
 
-    private void Abort()
+    private async Task Abort()
     {
         cts!.Cancel();
         cts = null;
