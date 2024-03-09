@@ -2,11 +2,17 @@
 @using KristofferStrube.Blazor.DOM.Abort
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Blazor.DOM - Custom Events</PageTitle>
+<PageTitle>Blazor.DOM - Aborting</PageTitle>
 
-<h1>Custom Event</h1>
+<h1>Aborting</h1>
 
 <p>
+    On this page you can invoke a JS function that never stops as it is an infinite loop.
+    The infinite loop checks whether a <code>AbortSignal</code> parsed to it is aborted in each iteration.
+    So when we want to stop the execution of the function we simply tell the <code>AbortController</code> that created the <code>AbortSignal</code> to abort.
+</p>
+<p style="font-size: 11px">
+    On a PC you can see that the function is indead running by checking the console log where it logs <code>"tick"</code> every 100 ms.
 </p>
 
 @if (cts is null)
@@ -20,12 +26,11 @@ else
 
 @code {
     CancellationTokenSource? cts;
-    AbortSignal signal;
 
     private async Task RunNeverEndingFunction()
     {
         AbortController abortController = await AbortController.CreateAsync(JSRuntime);
-        signal = await abortController.GetSignalAsync();
+        AbortSignal signal = await abortController.GetSignalAsync();
 
         cts = new();
         CancellationToken cancellationToken = cts.Token;
@@ -37,7 +42,7 @@ else
 #pragma warning restore 4014
     }
 
-    private async Task Abort()
+    private void Abort()
     {
         cts!.Cancel();
         cts = null;
