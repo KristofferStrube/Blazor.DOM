@@ -1,26 +1,29 @@
 ﻿using KristofferStrube.Blazor.DOM.Extensions;
 using KristofferStrube.Blazor.WebIDL;
+using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.DOM.Abort;
 
 /// <summary>
 /// Though promises do not have a built-in aborting mechanism, many APIs using them require abort semantics.
-/// <see cref="AbortController"/> is meant to support these requirements by providing an <see cref="AbortAsync(IJSObjectReference?)"/> method that toggles the state of a corresponding <see cref="AbortSignal{TAbortEvent}"/> object.
-/// The API which wishes to support aborting can accept an <see cref="AbortSignal{TAbortEvent}"/> object, and use its state to determine how to proceed.
+/// <see cref="AbortController"/> is meant to support these requirements by providing an <see cref="AbortAsync(IJSObjectReference?)"/> method that toggles the state of a corresponding <see cref="AbortSignal"/> object.
+/// The API which wishes to support aborting can accept an <see cref="AbortSignal"/> object, and use its state to determine how to proceed.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#abortcontroller">See the API definition here</see></remarks>
-internal class AbortController : BaseJSWrapper
+[IJSWrapperConverter]
+public class AbortController : BaseJSWrapper, IJSCreatable<AbortController>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="AbortController"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="AbortController"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="AbortController"/>.</returns>
-    public static Task<AbortController> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static async Task<AbortController> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult<AbortController>(new(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static Task<AbortController> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new AbortController(jSRuntime, jSReference, options));
     }
 
     /// <summary>
@@ -32,28 +35,61 @@ internal class AbortController : BaseJSWrapper
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructAbortController");
-        AbortController abortController = new(jSRuntime, jSInstance);
+        AbortController abortController = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
         return abortController;
     }
 
-    public AbortController(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc/>
+    protected AbortController(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
     }
 
-    public async Task<TAbortEvent> GetSignalAsync<TAbortEvent>() where TAbortEvent : Event, IJSCreatable<TAbortEvent>
+    /// <summary>
+    /// Returns the <see cref="AbortSignal"/> object associated with this object.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<AbortSignal> GetSignalAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "signal");
-        return await TAbortEvent.CreateAsync(JSRuntime, jSInstance);
+        return await AbortSignal.CreateAsync(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
-    public async Task AbortAsync(string? reason = null)
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(string reason)
     {
         await JSReference.InvokeVoidAsync("abort", reason);
     }
 
-    public async Task AbortAsync(IJSObjectReference? reason = null)
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(IJSObjectReference reason)
     {
         await JSReference.InvokeVoidAsync("abort", reason);
+    }
+
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// If reason is undefined, then an <see cref="AbortErrorException"/> will be stored.
+    /// </summary>
+    /// <param name="reason">The reason for why the activity is aborted.</param>
+    public async Task AbortAsync(IJSWrapper reason)
+    {
+        await JSReference.InvokeVoidAsync("abort", reason?.JSReference);
+    }
+
+    /// <summary>
+    /// Invoking this method will store reason in this object’s <see cref="AbortSignal.GetReasonAsync"/>, and signal to any observers that the associated activity is to be aborted.
+    /// </summary>
+    public async Task AbortAsync()
+    {
+        await JSReference.InvokeVoidAsync("abort");
     }
 }

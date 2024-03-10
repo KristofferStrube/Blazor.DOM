@@ -8,18 +8,20 @@ namespace KristofferStrube.Blazor.DOM;
 /// An <see cref="Event"/> object is simply named an event. It allows for signaling that something has occurred, e.g., that an image has completed downloading.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#event">See the API definition here</see></remarks>
+[IJSWrapperConverter]
 public class Event : BaseJSWrapper, IJSCreatable<Event>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="Event"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="Event"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="Event"/>.</returns>
+    /// <inheritdoc/>
     public static Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        Event eventInstance = new(jSRuntime, jSReference);
+        Event eventInstance = new(jSRuntime, jSReference, new());
         return Task.FromResult(eventInstance);
+    }
+
+    /// <inheritdoc/>
+    public static Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -33,16 +35,12 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEvent", type, eventInitDict);
-        Event eventInstance = new(jSRuntime, jSInstance);
+        Event eventInstance = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
         return eventInstance;
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="Event"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="Event"/>.</param>
-    protected Event(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    /// <inheritdoc/>
+    protected Event(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
 
     /// <summary>
     /// Gets the type of this <see cref="Event"/>
@@ -62,7 +60,7 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "target");
-        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance);
+        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -73,7 +71,7 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     {
         IJSObjectReference helper = await helperTask.Value;
         IJSObjectReference? jSInstance = await helper.InvokeAsync<IJSObjectReference?>("getAttribute", JSReference, "currentTarget");
-        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance);
+        return jSInstance is null ? null : new EventTarget(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -87,7 +85,7 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
         int length = await helper.InvokeAsync<int>("getAttribute", jSArray, "length");
         return (await Task.WhenAll(Enumerable
             .Range(0, length)
-            .Select(async i => new EventTarget(JSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i)))))
+            .Select(async i => new EventTarget(JSRuntime, await helper.InvokeAsync<IJSObjectReference>("getAttribute", jSArray, i), new() { DisposesJSReference = true }))))
             .ToArray();
     }
 

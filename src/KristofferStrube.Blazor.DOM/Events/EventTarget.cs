@@ -10,18 +10,19 @@ namespace KristofferStrube.Blazor.DOM;
 /// Each <see cref="EventTarget"/> object has an associated event listener list (a list of zero or more event listeners). It is initially the empty list.
 /// </summary>
 /// <remarks><see href="https://dom.spec.whatwg.org/#eventtarget">See the API definition here</see></remarks>
-public class EventTarget : BaseJSWrapper
+[IJSWrapperConverter]
+public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventTarget"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
-    public static EventTarget CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    static async Task<EventTarget> IJSCreatable<EventTarget>.CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        EventTarget eventTarget = new(jSRuntime, jSReference);
-        return eventTarget;
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new EventTarget(jSRuntime, jSReference, options));
     }
 
     /// <summary>
@@ -34,7 +35,7 @@ public class EventTarget : BaseJSWrapper
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
-        EventTarget eventTarget = new(jSRuntime, jSReference);
+        EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
         return eventTarget;
     }
 
@@ -47,16 +48,12 @@ public class EventTarget : BaseJSWrapper
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventTarget");
-        EventTarget eventTarget = new(jSRuntime, jSInstance);
+        EventTarget eventTarget = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
         return eventTarget;
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventTarget"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    protected internal EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    /// <inheritdoc/>
+    protected internal EventTarget(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
 
     /// <summary>
     /// Appends an event listener for events whose type attribute value is <paramref name="type"/>.

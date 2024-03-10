@@ -6,7 +6,8 @@ using Microsoft.JSInterop;
 namespace KristofferStrube.Blazor.DOM;
 
 /// <inheritdoc/>
-public class EventTargetInProcess : EventTarget, IEventTargetInProcess
+[IJSWrapperConverter]
+public class EventTargetInProcess : EventTarget, IEventTargetInProcess, IJSInProcessCreatable<EventTargetInProcess, EventTarget>
 {
     /// <summary>
     /// An in-process helper.
@@ -16,16 +17,17 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess
     /// <inheritdoc />
     public new IJSInProcessObjectReference JSReference { get; }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventTargetInProcess"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventTargetInProcess"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="EventTargetInProcess"/>.</returns>
+    /// <inheritdoc/>
     public static async Task<EventTargetInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
     {
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static async Task<EventTargetInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference, CreationOptions options)
+    {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
-        return new(jSRuntime, helper, jSReference);
+        return new(jSRuntime, helper, jSReference, options);
     }
 
     /// <summary>
@@ -38,7 +40,7 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
         IJSInProcessObjectReference jSReference = await helper.InvokeAsync<IJSInProcessObjectReference>("getJSReference", element);
-        EventTargetInProcess eventTarget = new(jSRuntime, helper, jSReference);
+        EventTargetInProcess eventTarget = new(jSRuntime, helper, jSReference, new() { DisposesJSReference = true });
         return eventTarget;
     }
 
@@ -51,17 +53,12 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess
     {
         IJSInProcessObjectReference helper = await jSRuntime.GetInProcessHelperAsync();
         IJSInProcessObjectReference jSInstance = await helper.InvokeAsync<IJSInProcessObjectReference>("constructEventTarget");
-        EventTargetInProcess eventTarget = new(jSRuntime, helper, jSInstance);
+        EventTargetInProcess eventTarget = new(jSRuntime, helper, jSInstance, new() { DisposesJSReference = true });
         return eventTarget;
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="EventTarget"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="inProcessHelper">An in-process helper instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="EventTarget"/>.</param>
-    protected internal EventTargetInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc cref="EventTarget(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    protected internal EventTargetInProcess(IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         this.inProcessHelper = inProcessHelper;
         JSReference = jSReference;
