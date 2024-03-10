@@ -18,6 +18,48 @@ On each page, you can find the corresponding code for the example in the top rig
 
 On the [Status page](https://kristofferstrube.github.io/Blazor.DOM/Status) you can see how much of the WebIDL specs this wrapper has covered.
 
+# Events
+The package brings a wrapper for `EventTarget`s. This enables us to listen for specific `Event`s happening on objects and to dispatch these events ourselves.
+```csharp
+ElementReference element; // Some element that we have a reference to.
+
+EventTarget eventTarget = await EventTarget.CreateAsync(JSRuntime, element);
+
+EventListener<Event> callback = await EventListener<Event>.CreateAsync(JSRuntime, async (e) =>
+{
+    if (await e.GetTypeAsync() is "pointerdown")
+    {
+        await e.PreventDefaultAsync();
+        Console.WriteLine("A pointer was pressed down and we prevented the default behaviour.");
+    }
+    else
+    {
+        Console.WriteLine("Some other pointer event happened.");
+    }
+});
+
+await eventTarget.AddEventListenerAsync("pointerdown", callback);
+await eventTarget.AddEventListenerAsync("pointermove", callback);
+await eventTarget.AddEventListenerAsync("pointerup", callback);
+await eventTarget.AddEventListenerAsync("pointerleave", callback);
+```
+The above sample serves as an imperative alternative to the the native way to listen to events. But it also opens up for controlling some of the options available on events like preventing the default behavior programmatically. In the above example we use this on a `ElementReference`, but we can create an `EventTarget` from an `IJSObjectReference` instead which means we can listen for events happening on any JS object that emits events.
+
+# Aborting
+In JS the counterpart to a `CancellationTokenSource` is called an `AbortController`. Like we can get a `CancellationToken` from an `CancellationTokenSource` in .NET we can get an `AbortSignal` from an `AbortController` in JS. Multiple standard APIs and libraries allow us to parse an `AbortSignal` to functions to be able to stop some long-running action.
+
+Let's imagine that there is some JS function which is cancellable called `myLongRunningFunction(signal)` which accepts an `AbortSignal`. Then we can cancel it if we need to like this.
+
+```csharp
+AbortController abortController = await AbortController.CreateAsync(JSRuntime);
+AbortSignal abortSignal = await abortController.GetSignalAsync();
+
+await JSRuntime.InvokeVoidAsync("myLongRunningFunction", abortSignal);
+
+// At a later point we can cancel this long running function from another method.
+await abortController.AbortAsync();
+```
+
 # Issues
 Feel free to open issues on the repository if you find any errors with the package or have wishes for features.
 
