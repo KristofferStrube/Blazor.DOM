@@ -43,7 +43,7 @@ await eventTarget.AddEventListenerAsync("pointermove", callback);
 await eventTarget.AddEventListenerAsync("pointerup", callback);
 await eventTarget.AddEventListenerAsync("pointerleave", callback);
 ```
-The above sample serves as an imperative alternative to the the native way to listen to events. But it also opens up for controlling some of the options available on events like preventing the default behavior programmatically. In the above example we use this on a `ElementReference`, but we can create an `EventTarget` from an `IJSObjectReference` instead which means we can listen for events happening on any JS object that emits events.
+The above example serves as an imperative alternative to the the native way to listen to events. But it also opens up for controlling some of the options available on events like preventing the default behavior programmatically. In the above example we use this on a `ElementReference`, but we can also create an `EventTarget` from an `IJSObjectReference` instead which means we can listen for events happening on any JS object that emits events.
 
 # Aborting
 In JS the counterpart to a `CancellationTokenSource` is called an `AbortController`. Like we can get a `CancellationToken` from an `CancellationTokenSource` in .NET we can get an `AbortSignal` from an `AbortController` in JS. Multiple standard APIs and libraries allow us to parse an `AbortSignal` to functions to be able to stop some long-running action.
