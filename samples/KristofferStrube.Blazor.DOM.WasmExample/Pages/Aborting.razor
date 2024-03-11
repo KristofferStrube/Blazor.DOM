@@ -37,9 +37,7 @@ else
         cancellationToken.UnsafeRegister(async _ => await abortController.AbortAsync(), null);
 
         StateHasChanged();
-#pragma warning disable 4014
         await JSRuntime.InvokeVoidAsync("neverEndingFunction", cancellationToken, signal);
-#pragma warning restore 4014
     }
 
     private void Abort()
