@@ -14,7 +14,7 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     private readonly ErrorHandlingJSObjectReference errorHandlingJSReference;
 
     /// <inheritdoc/>
-    public static async Task<AbortSignal> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static new async Task<AbortSignal> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return await CreateAsync(jSRuntime, jSReference, new());
     }

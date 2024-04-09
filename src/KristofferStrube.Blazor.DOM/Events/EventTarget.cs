@@ -14,7 +14,7 @@ namespace KristofferStrube.Blazor.DOM;
 public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
 {
     /// <inheritdoc/>
-    static async Task<EventTarget> IJSCreatable<EventTarget>.CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return await CreateAsync(jSRuntime, jSReference, new());
     }
