@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2024-04-09
+### Fixed
+- Fixed that the static method `EventTarget.CreateAsync(IJSRuntime, JSReference)` was not public.
+
 ## [0.2.0] - 2024-03-10
 ### Changed
 - Changed the version of `Blazor.WebIDL` to use the newest version which is 0.5.0.
