@@ -3,7 +3,7 @@ using KristofferStrube.Blazor.WebIDL;
 using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
 
-namespace KristofferStrube.Blazor.DOM.Abort;
+namespace KristofferStrube.Blazor.DOM;
 
 /// <summary>
 /// Though promises do not have a built-in aborting mechanism, many APIs using them require abort semantics.
