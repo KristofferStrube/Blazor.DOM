@@ -12,16 +12,15 @@ namespace KristofferStrube.Blazor.DOM;
 public class Event : BaseJSWrapper, IJSCreatable<Event>
 {
     /// <inheritdoc/>
-    public static Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static async Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        Event eventInstance = new(jSRuntime, jSReference, new());
-        return Task.FromResult(eventInstance);
+        return await CreateAsync(jSRuntime, jSReference, new());
     }
 
     /// <inheritdoc/>
     public static Task<Event> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new Event(jSRuntime, jSReference, options));
     }
 
     /// <summary>
