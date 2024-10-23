@@ -78,13 +78,18 @@ public class EventListener<TEvent> : BaseJSWrapper, IJSCreatable<EventListener<T
     [JSInvokable]
     public async Task HandleEventAsync(IJSObjectReference jSObjectReference)
     {
+        if (callback is null && asyncCallback is null)
+            return;
+
+        await using TEvent e = await TEvent.CreateAsync(JSRuntime, jSObjectReference, new() { DisposesJSReference = true });
+
         if (callback is not null)
         {
-            callback.Invoke(await TEvent.CreateAsync(JSRuntime, jSObjectReference));
+            callback.Invoke(e);
         }
         else if (asyncCallback is not null)
         {
-            await asyncCallback.Invoke(await TEvent.CreateAsync(JSRuntime, jSObjectReference));
+            await asyncCallback.Invoke(e);
         }
     }
 }
