@@ -33,10 +33,9 @@ public class AbortController : BaseJSWrapper, IJSCreatable<AbortController>
     /// <returns>A wrapper instance for a <see cref="AbortController"/>.</returns>
     public static async Task<AbortController> CreateAsync(IJSRuntime jSRuntime)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructAbortController");
-        AbortController abortController = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
-        return abortController;
+        return new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <inheritdoc/>
