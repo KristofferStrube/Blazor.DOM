@@ -31,13 +31,13 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="element">A <see cref="ElementReference"/> to some element that is targetable.</param>
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
-    public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
-    {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-        IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
-        EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
-        return eventTarget;
-    }
+public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
+{
+    IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+    IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
+    EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
+    return eventTarget;
+}
 
     /// <summary>
     /// Constructs a wrapper instance using the standard constructor.
@@ -65,8 +65,7 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     public async Task AddEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, AddEventListenerOptions? options = null)
         where TEvent : Event, IJSCreatable<TEvent>
     {
-        IJSObjectReference helper = await helperTask.Value;
-        await helper.InvokeVoidAsync("addEventListener", JSReference, type, callback?.JSReference, options);
+        await JSReference.InvokeVoidAsync("addEventListener", type, callback?.JSReference, options);
     }
 
     /// <summary>
@@ -78,8 +77,7 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <returns></returns>
     public async Task AddEventListenerAsync<TEvent>(EventListener<TEvent>? callback, AddEventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
-        IJSObjectReference helper = await helperTask.Value;
-        await helper.InvokeVoidAsync("addEventListener", JSReference, typeof(TEvent).Name, callback?.JSReference, options);
+        await JSReference.InvokeVoidAsync("addEventListener", typeof(TEvent).Name, callback?.JSReference, options);
     }
 
     /// <summary>
@@ -91,8 +89,7 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <returns></returns>
     public async Task RemoveEventListenerAsync<TEvent>(string type, EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
-        IJSObjectReference helper = await helperTask.Value;
-        await helper.InvokeVoidAsync("removeEventListener", JSReference, type, callback?.JSReference, options);
+        await JSReference.InvokeVoidAsync("removeEventListener", type, callback?.JSReference, options);
     }
 
     /// <summary>
@@ -103,8 +100,7 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <returns></returns>
     public async Task RemoveEventListenerAsync<TEvent>(EventListener<TEvent>? callback, EventListenerOptions? options = null) where TEvent : Event, IJSCreatable<TEvent>
     {
-        IJSObjectReference helper = await helperTask.Value;
-        await helper.InvokeVoidAsync("removeEventListener", JSReference, typeof(TEvent).Name, callback?.JSReference, options);
+        await JSReference.InvokeVoidAsync("removeEventListener", typeof(TEvent).Name, callback?.JSReference, options);
     }
 
     /// <summary>
