@@ -40,7 +40,7 @@ public class EventListener<TEvent> : BaseJSWrapper, IJSCreatable<EventListener<T
     /// <returns>A wrapper instance for a <see cref="EventListener{TEvent}"/>.</returns>
     public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Action<TEvent> callback)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
         EventListener<TEvent> eventListener = new(jSRuntime, jSInstance, new() { DisposesJSReference = true })
         {
@@ -58,7 +58,7 @@ public class EventListener<TEvent> : BaseJSWrapper, IJSCreatable<EventListener<T
     /// <returns>A wrapper instance for a <see cref="EventListener{TEvent}"/>.</returns>
     public static async Task<EventListener<TEvent>> CreateAsync(IJSRuntime jSRuntime, Func<TEvent, Task> callback)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventListener");
         EventListener<TEvent> eventListener = new(jSRuntime, jSInstance, new() { DisposesJSReference = true })
         {
