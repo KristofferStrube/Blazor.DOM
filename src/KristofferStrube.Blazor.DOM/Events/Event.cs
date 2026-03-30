@@ -32,10 +32,9 @@ public class Event : BaseJSWrapper, IJSCreatable<Event>
     /// <returns>A wrapper instance for a <see cref="Event"/>.</returns>
     public static async Task<Event> CreateAsync(IJSRuntime jSRuntime, string type, EventInit? eventInitDict = null)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEvent", type, eventInitDict);
-        Event eventInstance = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
-        return eventInstance;
+        return new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <inheritdoc/>

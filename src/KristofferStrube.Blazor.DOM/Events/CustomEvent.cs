@@ -32,9 +32,9 @@ public class CustomEvent : Event, IJSCreatable<CustomEvent>
     /// <returns>A wrapper instance for a <see cref="CustomEvent"/>.</returns>
     public static async Task<CustomEvent> CreateAsync(IJSRuntime jSRuntime, string type, CustomEventInit? eventInitDict = null)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructCustomEvent", type, eventInitDict);
-        return new CustomEvent(jSRuntime, jSInstance, new() { DisposesJSReference = true });
+        return new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <inheritdoc/>

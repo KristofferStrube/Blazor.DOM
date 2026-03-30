@@ -33,10 +33,9 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
     public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
-        EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
-        return eventTarget;
+        return new(jSRuntime, jSReference, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -46,10 +45,9 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
     public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime)
     {
-        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        await using IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructEventTarget");
-        EventTarget eventTarget = new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
-        return eventTarget;
+        return new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <inheritdoc/>
