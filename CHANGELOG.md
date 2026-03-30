@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Optimized the number of JSInterop calls needed to add or remove an `EventListener` to an `EventTarget`.
 
 ## [0.3.0] - 2024-10-23
 ### Fixed
