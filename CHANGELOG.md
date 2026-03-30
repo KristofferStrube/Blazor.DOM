@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-03-31
 ### Fixed
 - Fixed leaking `IJSObjectReference`s in `CreateAsync` methods of `EventListener`, `AbortController`, `CustomEvent`, `Event`, and `EventTarget`.
 ### Changed
 - Optimized the number of JSInterop calls needed to add or remove an `EventListener` to an `EventTarget`.
+- Changed the version of `Blazor.WebIDL` to use the newest version which is 0.8.0.
 ### Added
 - Added new overload for `AbortSignal.AddOnAbortEventListener` that takes an `EventListener` directly to move control to the caller. Also obsoleted the previous signature.
 
