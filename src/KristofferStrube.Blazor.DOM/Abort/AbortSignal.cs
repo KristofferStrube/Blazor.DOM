@@ -110,6 +110,17 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     /// </summary>
     /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
+    public async Task AddOnAbortEventListener(EventListener<Event> callback, AddEventListenerOptions? options = null)
+    {
+        await AddEventListenerAsync("abort", callback, options);
+    }
+
+    /// <summary>
+    /// Adds an <see cref="EventListener{TEvent}"/> for when the the signal is aborted.
+    /// </summary>
+    /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
+    /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
+    [Obsolete("This method overload does not follow our new convention for event listeners. This event will be removed in the next major version of the library.. Please use the other overload.")]
     public async Task<EventListener<Event>> AddOnAbortEventListener(Func<Event, Task> callback, AddEventListenerOptions? options = null)
     {
         EventListener<Event> eventListener = await EventListener<Event>.CreateAsync(JSRuntime, callback);
@@ -118,7 +129,7 @@ public class AbortSignal : EventTarget, IJSCreatable<AbortSignal>
     }
 
     /// <summary>
-    /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnAbortEventListener"/> previously.
+    /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnAbortEventListener(EventListener{Event}, AddEventListenerOptions?)"/> previously.
     /// </summary>
     /// <param name="callback">The callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
