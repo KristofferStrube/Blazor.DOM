@@ -68,33 +68,33 @@ public class EventTargetInProcess : EventTarget, IEventTargetInProcess, IJSInPro
     public void AddEventListener<TInProcessEvent, TEvent>(string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
          where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
-        this.AddEventListener(inProcessHelper, type, callback, options);
+        JSReference.InvokeVoid("addEventListener", type, callback?.JSReference, options);
     }
 
     /// <inheritdoc/>
     public void AddEventListener<TInProcessEvent, TEvent>(EventListenerInProcess<TInProcessEvent, TEvent>? callback, AddEventListenerOptions? options = null)
          where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
-        this.AddEventListener(inProcessHelper, callback, options);
+        JSReference.InvokeVoid("addEventListener", typeof(TEvent).Name, callback?.JSReference, options);
     }
 
     /// <inheritdoc/>
     public void RemoveEventListener<TInProcessEvent, TEvent>(string type, EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
          where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
-        this.RemoveEventListener(inProcessHelper, type, callback, options);
+        JSReference.InvokeVoid("removeEventListener", type, callback?.JSReference, options);
     }
 
     /// <inheritdoc/>
     public void RemoveEventListener<TInProcessEvent, TEvent>(EventListenerInProcess<TInProcessEvent, TEvent>? callback, EventListenerOptions? options = null)
          where TEvent : Event, IJSCreatable<TEvent> where TInProcessEvent : IJSInProcessCreatable<TInProcessEvent, TEvent>
     {
-        this.RemoveEventListener(inProcessHelper, callback, options);
+        JSReference.InvokeVoid("removeEventListener", typeof(TEvent).Name, callback?.JSReference, options);
     }
 
     /// <inheritdoc/>
     public bool DispatchEvent(Event eventInstance)
     {
-        return IEventTargetInProcessExtensions.DispatchEvent(this, eventInstance);
+        return JSReference.Invoke<bool>("dispatchEvent", eventInstance);
     }
 }

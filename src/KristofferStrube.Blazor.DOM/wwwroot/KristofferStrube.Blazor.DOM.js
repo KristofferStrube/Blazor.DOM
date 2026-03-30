@@ -3,16 +3,6 @@ export function setAttribute(object, attribute, value) { object[attribute] = val
 
 export function getJSReference(element) { return element.valueOf(); }
 
-export function addEventListener(target, type, eventListener = null, options = null)
-{
-    target.addEventListener(type, eventListener, options)
-}
-
-export function removeEventListener(target, type, eventListener = null, options)
-{
-    target.removeEventListener(type, eventListener, options)
-}
-
 export function constructEventListener() {
     return { };
 }
