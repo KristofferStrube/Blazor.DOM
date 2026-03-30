@@ -31,13 +31,13 @@ public class EventTarget : BaseJSWrapper, IJSCreatable<EventTarget>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="element">A <see cref="ElementReference"/> to some element that is targetable.</param>
     /// <returns>A wrapper instance for a <see cref="EventTarget"/>.</returns>
-public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
-{
-    IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-    IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
-    EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
-    return eventTarget;
-}
+    public static async Task<EventTarget> CreateAsync(IJSRuntime jSRuntime, ElementReference element)
+    {
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        IJSObjectReference jSReference = await helper.InvokeAsync<IJSObjectReference>("getJSReference", element);
+        EventTarget eventTarget = new(jSRuntime, jSReference, new() { DisposesJSReference = true });
+        return eventTarget;
+    }
 
     /// <summary>
     /// Constructs a wrapper instance using the standard constructor.
