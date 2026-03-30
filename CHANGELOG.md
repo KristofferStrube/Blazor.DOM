@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Fixed that the `EventListener.CreateAsync` methods leaked `IJSObjectReference`s
+- Fixed leaking `IJSObjectReference`s in `CreateAsync` methods of `EventListener`, `AbortController`, `CustomEvent`, `Event`, and `EventTarget`.
 ### Changed
 - Optimized the number of JSInterop calls needed to add or remove an `EventListener` to an `EventTarget`.
 ### Added
