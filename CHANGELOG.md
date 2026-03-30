@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Optimized the number of JSInterop calls needed to add or remove an `EventListener` to an `EventTarget`.
+### Added
+- Added new overload for `AbortSignal.AddOnAbortEventListener` that takes an `EventListener` directly to move control to the caller. Also obsoleted the previous signature.
 
 ## [0.3.0] - 2024-10-23
 ### Fixed
